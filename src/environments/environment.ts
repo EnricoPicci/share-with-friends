@@ -7,5 +7,8 @@ export const environment = {
   production: false,
 
   db: 'devdb',
-  testdb: 'testdb'
+  testdb: 'testdb',
+
+  imagePath: '/assets/images/',
+
 };

@@ -1,0 +1,25 @@
+  <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)" class="space-from-top margin-left-right" novalidate>
+      <md-grid-list cols="2" rowHeight="20px" class="full-width">
+        <md-grid-tile colspan="1" rowspan="4">
+          <md-input-container class="full-width margin-left-right" required>
+            <input mdInput placeholder="Email" formControlName="email" required>
+            <md-hint *ngIf="formErrors.email" [ngStyle]="{'color': 'red'}" align="start">{{formErrors.email}}</md-hint> 
+          </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile colspan="1" rowspan="4">
+          <md-input-container class="full-width margin-left-right" type="password">
+            <input mdInput placeholder="Password" formControlName="password" required type="password">
+            <md-hint *ngIf="formErrors.password" [ngStyle]="{'color': 'red'}" align="start">{{formErrors.password}}</md-hint>  
+          </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile colspan="2" rowspan="2">
+          <button md-raised-button class="full-width space-from-bottom" [disabled]="!form.valid">Log In</button>
+        </md-grid-tile>
+        <md-grid-tile colspan="2" rowspan="1">
+          <md-card class="signup"><a (click)="goToSignup()">Signup if you are not registered yet</a></md-card>
+        </md-grid-tile>
+        <md-grid-tile colspan="2" rowspan="1" *ngIf="failedLoginMessage">
+          <md-card [ngStyle]="{'color': 'red'}">{{failedLoginMessage}}</md-card>
+        </md-grid-tile>
+      </md-grid-list>
+  </form>

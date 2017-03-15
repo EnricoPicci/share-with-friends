@@ -1,3 +1,15 @@
-<h1>
-  {{title}}
-</h1>
+<md-sidenav-container>
+  <md-sidenav #sidenav mode="side" opened="false" (mouseleave)="sidenav.opened = false">
+    <md-icon class="toolbar-clickable-icon" (click)="sidenav.toggle()">cancel</md-icon>
+  </md-sidenav>
+  <md-toolbar color="primary">
+    <md-icon *ngIf="currentUser" class="toolbar-clickable-icon" (click)="sidenav.toggle()">menu</md-icon>
+    <span>Share with your friends</span>
+    <span class="fill-remaining-space"></span>
+
+    <md-icon *ngIf="currentUser" class="toolbar-clickable-icon" (click)="logout()">close</md-icon>
+  </md-toolbar>
+
+  <router-outlet></router-outlet>
+
+</md-sidenav-container>

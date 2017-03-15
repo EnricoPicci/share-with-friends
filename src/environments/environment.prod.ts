@@ -1,5 +1,8 @@
 export const environment = {
   production: true,
 
-  db: 'db'
+  db: 'db',
+
+  imagePath: '/assets/images/',
+
 };

@@ -1,0 +1,11 @@
+
+  <router-outlet></router-outlet>
+  
+  <md-grid-list cols="2" rowHeight="220px" class="space-from-top">
+    <md-grid-tile
+        *ngFor="let image of images"
+        colspan="1"
+        rowspan="1">
+          <img [src]="getImagePath(image)">
+    </md-grid-tile>
+  </md-grid-list>
