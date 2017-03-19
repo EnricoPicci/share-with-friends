@@ -12,12 +12,16 @@ import 'hammerjs';
 
 import {AuthService} from './providers/auth.service';
 import {UserService} from './providers/user.service';
+import {SharableThingService} from './providers/sharable-thing.service';
 
 import { AppComponent } from './app.component';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {SignupFormComponent} from './signup-form/signup-form.component';
 import {LoginFormComponent} from './login-form/login-form.component';
 import { HomeComponent } from './home/home.component';
+import { SharableThingListComponent } from './sharable-thing-list/sharable-thing-list.component';
+import { SharableThingComponent } from './sharable-thing/sharable-thing.component';
+import {AddFriendEmailComponent} from './sharable-thing/add-friend-email-dialog.component';
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent,
@@ -32,6 +36,14 @@ const appRoutes: Routes = [
           }
         ]
     },
+    {
+      path: 'sharableThingsList',
+      component: SharableThingListComponent
+    },
+    {
+      path: 'sharableThing',
+      component: SharableThingComponent
+    },
     { path: '',
         redirectTo: '/login',
         pathMatch: 'full'
@@ -45,7 +57,10 @@ const appRoutes: Routes = [
     PageNotFoundComponent,
     SignupFormComponent,
     LoginFormComponent,
-    HomeComponent
+    HomeComponent,
+    SharableThingListComponent,
+    SharableThingComponent,
+    AddFriendEmailComponent
   ],
   imports: [
     BrowserModule,
@@ -55,7 +70,8 @@ const appRoutes: Routes = [
     MaterialModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [AuthService, UserService],
-  bootstrap: [AppComponent]
+  providers: [AuthService, UserService, SharableThingService],
+  bootstrap: [AppComponent],
+  entryComponents: [AddFriendEmailComponent]
 })
 export class AppModule { }

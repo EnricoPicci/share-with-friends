@@ -1,0 +1,56 @@
+  
+  <button md-raised-button class="full-width space-from-bottom" (click)="error()">Error</button>
+  
+  <!--form [formGroup]="form" (ngSubmit)="onSubmit(form.value)" class="space-from-top margin-left-right" novalidate-->
+  <form [formGroup]="form" class="space-from-top margin-left-right" novalidate>
+      <md-grid-list cols="4" rowHeight="80px" class="full-width">
+
+        <md-grid-tile colspan="2" rowspan="1">
+          <md-input-container class="full-width margin-left-right" required>
+            <input mdInput placeholder="Name" formControlName="name" required>
+            <md-hint *ngIf="formErrors.name" [ngStyle]="{'color': 'red'}" align="start">{{formErrors.name}}</md-hint> 
+          </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile colspan="2" rowspan="1">
+          <input placeholder="Image file" 
+              type="file" required class="full-width margin-left-right"
+              (change)="fileChangeEvent($event)">
+        </md-grid-tile>
+        <md-grid-tile colspan="3" rowspan="1">
+          <md-input-container class="full-width margin-left-right" type="password">
+            <input mdInput placeholder="Short description" formControlName="description" required>
+            <md-hint *ngIf="formErrors.description" [ngStyle]="{'color': 'red'}" align="start">{{formErrors.description}}</md-hint>  
+          </md-input-container>
+        </md-grid-tile>
+
+        <md-grid-tile colspan="4" rowspan="1">
+          <md-card class="section-header" (click)="addFriend()">The friends</md-card>
+        </md-grid-tile>
+        <md-grid-tile colspan="4" rowspan="1">
+          <md-grid-list cols="3" rowHeight="200px" class="full-width">
+            <!--md-grid-tile colspan="3" rowspan="1">
+              <md-card class="section-header" (click)="addFriend()">The friends</md-card>
+            </md-grid-tile-->
+            <md-grid-tile colspan="1" rowspan="1" *ngFor="let friendMail of sharableThing.friendEmails">
+              <md-card class="friend-card">
+                <md-card-content>{{friendMail}}</md-card-content>
+                <md-card-actions>
+                  <button md-button (click)="removeFriendEmail(friendMail)">DELETE</button>
+                </md-card-actions>
+              </md-card>
+            </md-grid-tile>
+          </md-grid-list>
+        </md-grid-tile>
+        
+        <md-grid-tile colspan="4" rowspan="1">
+          <button md-raised-button class="full-width space-from-bottom" [disabled]="!form.valid" (click)="onSubmit(form.value)">Save</button>
+          <!--button md-raised-button class="full-width space-from-bottom" [disabled]="!form.valid">Save</button-->
+        </md-grid-tile>
+        <md-grid-tile colspan="4" rowspan="1" *ngIf="errorMessage">
+          <md-card [ngStyle]="{'color': 'red'}">{{errorMessage}}</md-card>
+        </md-grid-tile>
+
+      </md-grid-list>
+  </form>
+
+

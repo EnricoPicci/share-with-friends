@@ -42,4 +42,9 @@ describe('SharableThing', () => {
     expect(sharableThing2.monetaryAmount).toEqual(monetaryAmount2);
   });
 
+  it('test that images are never undefined', () => {
+    const sharableThing3 = new SharableThing(null);
+    expect(sharableThing3.images).toEqual([]);
+  });
+
 });

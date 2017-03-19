@@ -19,24 +19,24 @@ export class UserService {
                                 .switchMap(authState => this.getCurrentUser(authState));
   }
 
-  createUser(uid: string, name: string, email: string) {
+  private createUser(uid: string, name: string, email: string) {
     const dbKey = this.getDbKey(email);
     const user = new User(uid, name, email, dbKey);
     return user;
   }
-  createAndSaveUser(uid: string, name: string, email: string) {
-    const dbKey = this.getDbKey(email);
-    const user = new User(uid, name, email, dbKey);
-    console.log('creation of user', user);
+  private createAndSaveUser(uid: string, name: string, email: string) {
+    // const dbKey = this.getDbKey(email);
+    // const user = new User(uid, name, email, dbKey);
+    // console.log('creation of user', user);
     this.saveUser(this.createUser(uid, name, email));
   }
 
-  saveUser(user: User) {
+  private saveUser(user: User) {
     const dbKey = this.getFirebaseUserKey(user);
     return this.af.database.object(dbKey).update(user);
   }
 
-  getCurrentUser(authState: FirebaseAuthState) {
+  private getCurrentUser(authState: FirebaseAuthState) {
     let ret: Observable<User>;
     if (!authState) {
       const subject = new ReplaySubject<User>(1);

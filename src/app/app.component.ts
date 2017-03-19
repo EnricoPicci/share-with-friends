@@ -16,17 +16,23 @@ export class AppComponent implements OnInit, OnDestroy {
   // before leaving the app the logout is performed
   @HostListener('window:beforeunload', ['$event'])
     beforeUnloadHander(event) {
-      this.logout();
+      this.authService.logout();
   }
 
-  constructor(private authService: AuthService, 
+  constructor(private authService: AuthService,
               private userService: UserService,
               private router: Router) {
   }
 
   ngOnInit() {
     this.userService.currentUser$.subscribe(
-      user => {console.log('current user', user); this.currentUser = user; }
+      user => {
+        console.log('current user', user);
+        this.currentUser = user;
+        if (user) {
+          this.router.navigate(['sharableThingsList'], {skipLocationChange: true});
+        }
+      }
     );
   }
 

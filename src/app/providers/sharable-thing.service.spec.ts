@@ -49,6 +49,7 @@ describe('SharableThingService', () => {
     const theSecondFriendEmail = 'asecondfriend@my.com';
     let testUserSubscription;
     let theUser: User;
+    const theSharableThingOwner = 'fakeowner@my.com';
     createUserAndLogin(authService);
     testUserSubscription = userService.currentUser$.filter(user => user !== null).first().subscribe(
         user => {
@@ -59,7 +60,7 @@ describe('SharableThingService', () => {
       // add a sharable thing for some friends
       console.log('after some time .... a sharable thing for for some friends is added');
       const sharableThing1 = new SharableThing(null, name, description, [],
-                                    'fakeowner@my.com', [theUser.email, theSecondFriendEmail], false, monetaryAmountAmount);
+                                    theSharableThingOwner, [theUser.email, theSecondFriendEmail], false, monetaryAmountAmount);
       sharableThingService.saveSharableThing(sharableThing1).then(() => {
         console.log('... then I logout (ADD SHARABLE THING FOR SOME FRIENDs)...');
         authService.logout().then(() => {
@@ -71,11 +72,16 @@ describe('SharableThingService', () => {
                 const obs1 = userService.getUser(theUser.email).first();
                 const obs2 = userService.getUser(theSecondFriendEmail).first();
                 const obs3 = sharableThingService.loadSharableThing(sharableThing1.$key).first();
-                Observable.merge(obs1, obs2, obs3).subscribe(
+                const obs4 = sharableThingService.loadActiveSharableThingsForOwner(theSharableThingOwner)
+                                                .first()
+                                                .do(things => console.log('the things', things))
+                                                .map(things => things[0])
+                                                .do(thing => console.log('the thing', thing));
+                Observable.merge(obs1, obs2, obs3, obs4).subscribe(
                     userOrSharableThing => {
                         if (!(userOrSharableThing instanceof User ||
                                 userOrSharableThing instanceof SharableThing)) {
-                            console.log('we ex[ect only instance of type User or SharableThing', userOrSharableThing);
+                            console.log('we expect only instance of type User or SharableThing', userOrSharableThing);
                             throw new Error('we ex[ect only instance of type User or SharableThing');
                         } else
                         if (userOrSharableThing instanceof User

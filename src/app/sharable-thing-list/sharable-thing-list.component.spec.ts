@@ -1,20 +1,20 @@
 // import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-// import { LoginFormComponent } from './login-form.component';
+// import { SharableThingListComponent } from './sharable-thing-list.component';
 
-// describe('LoginFormComponent', () => {
-//   let component: LoginFormComponent;
-//   let fixture: ComponentFixture<LoginFormComponent>;
+// describe('SharableThingListComponent', () => {
+//   let component: SharableThingListComponent;
+//   let fixture: ComponentFixture<SharableThingListComponent>;
 
 //   beforeEach(async(() => {
 //     TestBed.configureTestingModule({
-//       declarations: [ LoginFormComponent ]
+//       declarations: [ SharableThingListComponent ]
 //     })
 //     .compileComponents();
 //   }));
 
 //   beforeEach(() => {
-//     fixture = TestBed.createComponent(LoginFormComponent);
+//     fixture = TestBed.createComponent(SharableThingListComponent);
 //     component = fixture.componentInstance;
 //     fixture.detectChanges();
 //   });

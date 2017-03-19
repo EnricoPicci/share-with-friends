@@ -60,7 +60,6 @@ export class LoginFormComponent implements OnInit {
   }
 
   onValueChanged(data?: any) {
-    console.log('form ', this.form);
     if (!this.form) { return; }
     const form = this.form;
     // tslint:disable-next-line:forin
@@ -73,7 +72,6 @@ export class LoginFormComponent implements OnInit {
         const messages = this.validationMessages[field];
         // tslint:disable-next-line:forin
         for (const key in control.errors) {
-          console.log('control error msg', messages[key]);
           this.formErrors[field] += messages[key] + ' ';
         }
       }
@@ -81,7 +79,7 @@ export class LoginFormComponent implements OnInit {
   }
 
   goToSignup() {
-    this.router.navigate(['signup'], { relativeTo: this.route });
+    this.router.navigate(['signup'], { relativeTo: this.route, skipLocationChange: true });
   }
 
 }

@@ -17,3 +17,8 @@
     margin-bottom: 10px;
 }
 
+.section-header {
+  background-color: lightgoldenrodyellow;
+  text-align: center;
+  width: 100%;
+}

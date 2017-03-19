@@ -1,0 +1,23 @@
+  <md-card class="section-header" (click)="goToSharableThing(null)">The things you want to share</md-card>
+
+  <md-grid-list cols="3" class="space-from-top">
+    <md-grid-tile
+        *ngFor="let sharableThing of sharableThings"
+        colspan="1"
+        rowspan="1">
+        <md-card class="sharable-thing-card">
+            <md-card-header>
+              <md-card-title>{{sharableThing.name}}</md-card-title>
+            </md-card-header>
+            <img md-card-image src="assets/images/share1.jpeg">
+            <md-card-content>
+              <p>{{sharableThing.description}}</p>
+            </md-card-content>
+            <md-card-actions>
+              <button md-button>VIEW</button>
+              <button md-button>DELETE</button>
+            </md-card-actions>
+          </md-card>
+    </md-grid-tile>
+  </md-grid-list>
+

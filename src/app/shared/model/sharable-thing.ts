@@ -14,6 +14,9 @@ export class SharableThing {
         daylyChargeAmount?: number,
         daylyChargeCurrency?: string) {
             this.monetaryAmount = new MonetaryAmount(daylyChargeAmount, daylyChargeCurrency);
+            if (!this.images) {this.images = []; }
+            if (!this.friendEmails) {this.friendEmails = []; }
+            if (!this.removed) {this.removed = false; }
     }
 
     // tslint:disable-next-line:member-ordering

@@ -4,7 +4,7 @@ export const firebaseConfig = {
     apiKey: 'AIzaSyBkDvFcJMq5ccJQkBUsBXEwZMAdbeN-fE8',
     authDomain: 'sharewithfriends-f0b95.firebaseapp.com',
     databaseURL: 'https://sharewithfriends-f0b95.firebaseio.com',
-    storageBucket: '',
+    storageBucket: 'gs://sharewithfriends-f0b95.appspot.com/',
     messagingSenderId: '59640657706'
 };
 

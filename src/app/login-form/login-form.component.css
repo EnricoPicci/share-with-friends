@@ -1,20 +1,4 @@
 
-.full-width {
-  width: 100%;
-}
-.margin-left-right {
-  margin-left: 2%;
-  margin-right: 2%;
-}
-
-.space-from-top {
-    margin-top: 10px;
-}
-
-.space-from-bottom {
-    margin-bottom: 10px;
-}
-
 .signup {
     color: darkblue;
     cursor: pointer;
