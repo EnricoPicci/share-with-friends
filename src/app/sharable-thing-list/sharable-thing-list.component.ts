@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import {Subscription} from 'rxjs/Rx';
 
 import {SharableThing} from '../shared/model/sharable-thing';
 import {SharableThingService} from '../providers/sharable-thing.service';
@@ -11,15 +12,20 @@ import {UserService} from '../providers/user.service';
   templateUrl: './sharable-thing-list.component.html',
   styleUrls: ['./sharable-thing-list.component.css']
 })
-export class SharableThingListComponent implements OnInit {
+export class SharableThingListComponent implements OnInit, OnDestroy {
   sharableThings: SharableThing[];
+
+  sub1: Subscription;
 
   constructor(private sharableThingService: SharableThingService,
               private userService: UserService,
               private router: Router) { }
 
   ngOnInit() {
-    this.getActiveSharableThings().subscribe(sharableThings => this.sharableThings = sharableThings);
+    this.sub1 = this.getActiveSharableThings().subscribe(sharableThings => this.sharableThings = sharableThings);
+  }
+  ngOnDestroy() {
+    this.sub1.unsubscribe();
   }
 
   getActiveSharableThings() {
@@ -34,9 +40,14 @@ export class SharableThingListComponent implements OnInit {
     if (sharableThing) {
       key = sharableThing.$key;
     }
+    // this.router.navigate(['sharableThing'], {queryParams: {sharableThingkey: key}});
     this.router.navigate(['sharableThing'],
                                   {skipLocationChange: true,
                                   queryParams: {sharableThingkey: key}});
+  }
+
+  removeSharableThing(sharableThing: SharableThing) {
+    this.sharableThingService.removeSharableThing(sharableThing);
   }
 
 }

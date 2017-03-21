@@ -3,7 +3,7 @@ import {Friend} from './friend';
 
 export class User {
     public sharableThings = new Array<SharableThing>();
-    public friends = new Array<Friend>();
+    private friends = new Array<Friend>();
     public thingsOfferedToMeKeys = new Array<string>();
 
     constructor(
@@ -29,6 +29,16 @@ export class User {
     // tslint:disable-next-line:member-ordering
     static fromJson({authUid, name, email, dbKey, sharableThings, friends, thingsOfferedToMeKeys}) {
         return new User(authUid, name, email, dbKey, sharableThings, friends, thingsOfferedToMeKeys);
+    }
+
+    getFriends() {
+        return this.friends;
+    }
+    addFriend(friend: Friend) {
+        this.friends.push(friend);
+    }
+    resetFriends() {
+        this.friends = [];
     }
 
 }

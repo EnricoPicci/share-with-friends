@@ -9,6 +9,7 @@ import {SharableThingService} from '../providers/sharable-thing.service';
 import {User} from '../shared/model/user';
 import {UserService} from '../providers/user.service';
 import {AddFriendEmailComponent} from './add-friend-email-dialog.component';
+import {Friend} from '../shared/model/friend';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -53,24 +54,31 @@ export class SharableThingComponent implements OnInit, OnDestroy {
    }
 
   ngOnInit() {
-    // this.route.queryParams
-    //       .do(q => console.log('query params', q['sharableThingkey']))
-    //       .switchMap(queryParams => this.sharableThingService.loadSharableThing(queryParams['sharableThingkey']))
-    //       .subscribe(sharableThing => this.sharableThing = sharableThing);
-    this.route.queryParams.subscribe(
-      queryParams => {
-        console.log('my params', queryParams);
-        if (queryParams['sharableThingkey'] === '') {
-          this.sharableThing = new SharableThing(null);
-        } else {
-          this.sharableThingService.loadSharableThing(queryParams['sharableThingkey']).subscribe(
-            sharableThing => this.sharableThing = sharableThing
-          );
-        }
-      }
-    );
+    // Make sure that we first get the currentUser and then create (or load) the sharableThing
+    // This is important in the case of a new SharableThing - when we create a new SharableThing we want to make sure
+    // we have already the currentUser at hand
     this.currentUserSubscription = this.userService.currentUser$.subscribe(
-      user => this.currentUser = user
+      user => {
+        this.currentUser = user;
+        this.route.queryParams.subscribe(
+          queryParams => {
+            console.log('my params', queryParams);
+            if (queryParams['sharableThingkey'] === '') {
+              this.sharableThing = new SharableThing(null, null, null);
+              this.sharableThing.ownerEmail = this.currentUser.email;
+              this.sharableThingService.getUniqueKeyForSharableThing(this.sharableThing);
+            } else {
+              this.sharableThingService.loadSharableThing(queryParams['sharableThingkey']).subscribe(
+                sharableThing => {
+                  this.sharableThing = sharableThing;
+                  this.form.controls['name'].setValue(sharableThing.name);
+                  this.form.controls['description'].setValue(sharableThing.description);
+                }
+              );
+            }
+          }
+        );
+      }
     );
   }
   ngOnDestroy() {
@@ -88,7 +96,6 @@ export class SharableThingComponent implements OnInit, OnDestroy {
   }
 
   onValueChanged(data?: any) {
-    console.log(this.form);
     if (!this.form) { return; }
     const form = this.form;
     // tslint:disable-next-line:forin
@@ -111,39 +118,40 @@ export class SharableThingComponent implements OnInit, OnDestroy {
     console.log('file selected', $event);
     console.log('the files', $event.target.files);
     this.filesSelected = $event.target.files;
+    this.sharableThingService.uploadImages(this.filesSelected, this.sharableThing)
+            .then(() => this.sharableThingService.retrieveImageUrls(this.sharableThing));
   }
 
   onSubmit(formData) {
     console.log('the thing', this.sharableThing);
     this.sharableThing.name = formData.name;
     this.sharableThing.description = formData.description;
-    this.sharableThing.ownerEmail = this.currentUser.email;
     this.sharableThingService
           .uploadImages(this.filesSelected, this.sharableThing)
           .then(data => {
-            console.log('after uploading', data);
+            console.log('after uploading', this.sharableThing);
             this.sharableThingService.saveSharableThing(this.sharableThing);
+            this.router.navigate(['sharableThingsList'], {skipLocationChange: true});
           })
           .catch(err => console.log(err));
   }
 
   addFriend() {
     const dialogRef = this.dialog.open(AddFriendEmailComponent);
-    dialogRef.afterClosed().subscribe(email => {
-      if (email) {
-        this.sharableThing.friendEmails.push(email);
+    dialogRef.afterClosed().subscribe((friend: Friend) => {
+      console.log('firend', friend);
+      if (friend && friend.email) {
+        this.sharableThing.addFriendEmail(friend.email, false);
       }
     });
   }
 
   removeFriendEmail(friendMail) {
-    const emailIndex = this.sharableThing.friendEmails.indexOf(friendMail);
-    this.sharableThing.friendEmails.splice(emailIndex, 1);
+    this.sharableThing.removeFriendEmail(friendMail);
   }
 
-  error() {
-    const d = null;
-    d.length();
+  removeImage(imageUrl) {
+    this.sharableThingService.removeImage(this.sharableThing, imageUrl);
   }
 
 }

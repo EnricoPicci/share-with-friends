@@ -22,6 +22,7 @@ import { HomeComponent } from './home/home.component';
 import { SharableThingListComponent } from './sharable-thing-list/sharable-thing-list.component';
 import { SharableThingComponent } from './sharable-thing/sharable-thing.component';
 import {AddFriendEmailComponent} from './sharable-thing/add-friend-email-dialog.component';
+import { FriendFormComponent } from './friend-form/friend-form.component';
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent,
@@ -60,7 +61,8 @@ const appRoutes: Routes = [
     HomeComponent,
     SharableThingListComponent,
     SharableThingComponent,
-    AddFriendEmailComponent
+    AddFriendEmailComponent,
+    FriendFormComponent
   ],
   imports: [
     BrowserModule,

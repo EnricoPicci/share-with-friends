@@ -11,4 +11,6 @@ export const environment = {
 
   imagePath: '/assets/images/',
 
+  defaultCoverImage: '/assets/images/share1.jpeg'
+
 };

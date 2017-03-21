@@ -22,11 +22,21 @@ export class SharableThingService {
 
   loadSharableThingsForOwner(email: string) {
     return this.af.database.list(this.getFirebaseRef(), {
-      query: {
-        orderByChild: 'ownerEmail',
-        equalTo: email
-      }
-    }).map(SharableThing.fromJsonArray);
+          query: {
+            orderByChild: 'ownerEmail',
+            equalTo: email
+          }
+        })
+        // this filter is to avoid passing empty objects which may be present in the list, since
+        // the 'getUniqueKeyForSharableThing()' method can actually create empty objects which are never
+        // substituted by real sharableThings
+        .map(items => items.filter(item => item.name))
+        .map(SharableThing.fromJsonArray)
+        .mergeMap(sharableThings => this.retrieveImageUrlsForAll(sharableThings));
+        // .map(sharableThings => {
+        //   sharableThings.map(sharableThing => this.retrieveImageUrls(sharableThing));
+        //   return sharableThings;
+        // });
   }
   loadActiveSharableThingsForOwner(email: string) {
     return this.loadSharableThingsForOwner(email)
@@ -37,19 +47,20 @@ export class SharableThingService {
   //                   .map(response => response.json());
   // }
   loadSharableThing(key: string) {
-    return this.af.database.object(this.getFirebaseRef() + '/' + key)
-            .map(SharableThing.fromJson);
+    return this.af.database.object(this.getFirebaseObjRef(key))
+            .map(SharableThing.fromJson)
+            .map(sharableThing => {
+              this.retrieveImageUrls(sharableThing);
+              return sharableThing;
+            });
   }
 
   saveSharableThing(sharableThing: SharableThing) {
+    // imageUrls need to be reset because they can not be saved in firebase given the format of the keys (which is the
+    // format of the urls, containing '/' characters which can not be saved by Firebase as keys).
+    // In any case imageUrls are built everytime the object is read from Firebase
+    sharableThing.resetImageUrls();
     let ret: firebase.Thenable<any>;
-    console.log('here I am');
-    const sendResp = Email.send('from@you.com',
-              'enrico.piccinin@gmail.com',
-              'This is a subject',
-              'this is the body',
-              {token: '66722d6e-14ca-4ae3-b87c-77b3f54f750f'});
-    console.log('send ret', sendResp);
     const listObservable =  this.af.database.list(this.getFirebaseRef());
     if (!sharableThing.$key) {
       delete sharableThing.$key;
@@ -60,36 +71,46 @@ export class SharableThingService {
               })
               .catch(err => console.error('error in saveSharableThing', err));
     } else {
-      ret = listObservable.update(sharableThing.$key, sharableThing)
+      const theKey = sharableThing.$key;
+      delete sharableThing.$key;
+      ret = listObservable.update(theKey, sharableThing)
+                .then(() => {
+                  sharableThing.$key = theKey;
+                  this.updateThingsOfferedToFriends(sharableThing);
+                })
                 .catch(err => console.log('err in saveSharableThing', err));
-      this.updateThingsOfferedToFriends(sharableThing);
     }
     return ret;
   }
   private updateThingsOfferedToFriends(sharableThing: SharableThing) {
-    for (let i = 0; i < sharableThing.friendEmails.length; i++) {
-      const friendEmail = sharableThing.friendEmails[i];
-      this.userService.addSharableThingOfferedToFriend(sharableThing.$key, friendEmail);
+    for (let i = 0; i < sharableThing.getFriendEmails().length; i++) {
+      const friendEmail = sharableThing.getFriendEmails()[i];
+      this.userService.addSharableThingOfferedToFriend(sharableThing.$key, friendEmail.email);
     }
   }
-  // uploadImages(images: FileList, sharableThing: SharableThing) {
-  //   for (let i = 0; i < images.length; i++) {
-  //     const imageFile = images[i];
-  //     const path = 'images/' + this.getImageDirName(sharableThing) + imageFile.name;
-  //     const storageRef = this.firebaseApp.storage().ref().child(path);
-  //     storageRef.put(imageFile).then((snapshot) => {
-  //       sharableThing.images.push(imageFile.name);
-  //       console.log('Uploaded a blob or file!', snapshot);
-  //     });
-  //   }
-  // }
+  getUniqueKeyForSharableThing(sharableThing: SharableThing) {
+    if (sharableThing.$key) {
+      console.log('sharable thing with a key', sharableThing);
+      throw Error('The sharable thing has already a key');
+    }
+    const listObservable =  this.af.database.list(this.getFirebaseRef());
+    // I push an object marked as temporary with a specific property to get a unique key.
+    // The empy obj will be substituted by the real object when this is saved.
+    // If the user does not save the sharableThing, then the list will contain empty objects.
+    listObservable.push({temporary: true})
+      .then((item) => {
+        sharableThing.$key = item.key;
+        console.log('getUniqueKeyForSharableThing', sharableThing);
+      })
+      .catch(err => console.error('error in getUniqueKeyForSharableThing', err));
+  }
+
   uploadImages(images: FileList, sharableThing: SharableThing) {
     const promises = [];
     if (images) {
       for (let i = 0; i < images.length; i++) {
         const imageFile = images[i];
-        // const path = 'images/' + this.getImageDirName(sharableThing) + imageFile.name.replace(/\s/g, '+');
-        const path = 'images/' + this.getImageDirName(sharableThing) + '_' + imageFile.name;
+        const path = this.getImageDirName(sharableThing) + '_' + imageFile.name;
         const storage = firebase.storage();
         const storageRef = storage.ref().child(path);
         promises.push(storageRef.put(imageFile)
@@ -99,10 +120,77 @@ export class SharableThingService {
     }
     return Promise.all(promises);
   }
+  retrieveImageUrls(sharableThing: SharableThing) {
+    const promises = [];
+    const imageFileNames = sharableThing.images;
+    for (let i = 0; i < imageFileNames.length; i++) {
+      const imageFileName = imageFileNames[i];
+      const storage = firebase.storage();
+      const storageRef = this.getStorageFileRef(imageFileName);
+      promises.push(storageRef.getDownloadURL()
+                        .then(fileUrl => sharableThing.addImageUrl(imageFileName, fileUrl))
+                        .catch(err => console.error('error in downloading image url', err)));
+    }
+    return Promise.all(promises);
+  }
+  // retrieves the image urls for all the sharable things contained in the array of the input
+  // returns an Observable which emits when all the promises have been resolved
+  retrieveImageUrlsForAll(sharableThings: SharableThing[]) {
+    const subject = new Subject<SharableThing[]>();
+    const promises = [];
+    for (let i = 0; i < sharableThings.length; i++) {
+      const sharableThing = sharableThings[i];
+      promises.push(this.retrieveImageUrls(sharableThing));
+    }
+    Promise.all(promises).then(res => {
+                console.log('Promise any', res);
+                subject.next(sharableThings);
+                subject.complete();
+            },
+            err => {
+                subject.error(err);
+                subject.complete();
+            });
+    return subject.asObservable();
+  }
+
+  removeAllImagesFromStorage(sharableThing: SharableThing) {
+    // THE FOLLOWING CODE WOULD REMOVE THE ENTIRE DIRECTORY
+    // UNFORTUNATELY IT DOES NOT WORK SINCE FIREBASE SDK DOES NOT IMPLEMENT YET THE DELETE DIRECTORY FUNCTIONALITY
+    // const imagesDir = this.getImageDirName(sharableThing);
+    // console.log('imagesDir', imagesDir);
+    // this.getStorageFileRef(imagesDir).delete()
+    //         .catch(err => console.log('MANAGED DELETE FROM STORAGE EXCEPTION - no images found for', imagesDir));
+    const imageFileNames = sharableThing.images;
+    for (let i = 0; i < imageFileNames.length; i++) {
+      const imageFileName = imageFileNames[i];
+      const storageRef = this.getStorageFileRef(imageFileName);
+      storageRef.delete();
+    }
+  }
+  removeImage(sharableThing: SharableThing, imageUrl: string) {
+    // const imageUrls = sharableThing.getImageUrls();
+    // const imageFileName = _.findKey(imageUrls, imageUrl);
+    const imageFileName = sharableThing.getImageFileNameForUrl(imageUrl);
+    const imageFileNames = sharableThing.images;
+    const imageFileNameIndex = imageFileNames.indexOf(imageFileName);
+    sharableThing.images.splice(imageFileNameIndex, 1);
+    // delete imageUrls[imageFileName];
+    // this.af.database.object(this.getFirebaseObjRef(sharableThing.$key)).update(sharableThing)
+    this.saveSharableThing(sharableThing);
+      // .then(() => this.getStorageFileRef(imageFileName).delete());
+  }
+  private getStorageFileRef(fileName: string) {
+    const storage = firebase.storage();
+    return storage.ref().child(fileName);
+  }
 
   removeSharableThing(sharableThing: SharableThing) {
-    this.af.database.list(this.getFirebaseRef()).update(sharableThing.$key, {'removed': true});
-    this.userService.removeSharableThingKeyFromUsers(sharableThing.friendEmails, sharableThing.$key);
+    this.af.database.list(this.getFirebaseRef()).update(sharableThing.$key, {'removed': true, 'images': []})
+        .then(() => this.removeAllImagesFromStorage(sharableThing));
+    // this.af.database.list(this.getFirebaseRef()).update(sharableThing.$key, {'removed': true});
+    const userEmails = this.getUserEmails(sharableThing.getFriendEmails());
+    this.userService.removeSharableThingKeyFromUsers(userEmails, sharableThing.$key);
   }
   // implements the logic using the Observable pattern
   // requires client to subscribe in order for the logic to be activated
@@ -121,18 +209,25 @@ export class SharableThingService {
           }
       );
     const removeObs = subject.asObservable();
-    const removeFromFriendsObs = this.userService.removeSharableThingKeyFromUsersObs(sharableThing.friendEmails, sharableThing.$key);
+    const userEmails = this.getUserEmails(sharableThing.getFriendEmails());
+    const removeFromFriendsObs = this.userService.removeSharableThingKeyFromUsersObs(userEmails, sharableThing.$key);
     return Observable.merge(removeObs, removeFromFriendsObs);
+  }
+  private getUserEmails(friendEmails: {email: string, notified: boolean}[]) {
+    return friendEmails.map(friendEmail => friendEmail.email);
   }
 
   private getFirebaseRef() {
     return '/' + environment.db + SHARABLETHINGS;
   }
+  private getFirebaseObjRef(key: string) {
+    return this.getFirebaseRef() + '/' + key;
+  }
   private getFirebaseSharableThingKey(sharableThing: SharableThing) {
     return this.getFirebaseRef() + sharableThing.$key;
   }
   private getImageDirName(sharableThing: SharableThing) {
-    return sharableThing.ownerEmail.replace('@', '-');
+    return 'images/' + sharableThing.ownerEmail.replace('@', '-') + '/' + sharableThing.$key + '/';
   }
 
 }

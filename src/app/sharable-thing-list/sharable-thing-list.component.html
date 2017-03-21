@@ -9,13 +9,13 @@
             <md-card-header>
               <md-card-title>{{sharableThing.name}}</md-card-title>
             </md-card-header>
-            <img md-card-image src="assets/images/share1.jpeg">
+            <img md-card-image *ngIf="sharableThing.getCoverImageUrl()" [src]="sharableThing.getCoverImageUrl()">
             <md-card-content>
               <p>{{sharableThing.description}}</p>
             </md-card-content>
             <md-card-actions>
-              <button md-button>VIEW</button>
-              <button md-button>DELETE</button>
+              <button md-button (click)="goToSharableThing(sharableThing)">VIEW</button>
+              <button md-button (click)="removeSharableThing(sharableThing)">DELETE</button>
             </md-card-actions>
           </md-card>
     </md-grid-tile>

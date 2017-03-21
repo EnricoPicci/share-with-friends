@@ -1,0 +1,37 @@
+  <form [formGroup]="form" class="space-from-top margin-left-right" novalidate>
+      <md-grid-list cols="2" rowHeight="20px" class="full-width">
+
+        <md-grid-tile colspan="1" rowspan="4">
+          <md-input-container class="full-width margin-left-right" required>
+            <input mdInput placeholder="Email" formControlName="email" required>
+            <md-hint *ngIf="formErrors.email" [ngStyle]="{'color': 'red'}" align="start">{{formErrors.email}}</md-hint> 
+          </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile colspan="1" rowspan="4">
+          <md-input-container class="full-width margin-left-right">
+            <input mdInput placeholder="Nickname" formControlName="nickname" required>
+            <md-hint *ngIf="formErrors.nickname" [ngStyle]="{'color': 'red'}" align="start">{{formErrors.nickname}}</md-hint>  
+          </md-input-container>
+        </md-grid-tile>
+
+        <md-grid-tile colspan="1" rowspan="4">
+          <md-input-container class="full-width margin-left-right" required>
+            <input mdInput placeholder="FIrst Name" formControlName="firstname" required>
+            <md-hint *ngIf="formErrors.firstname" [ngStyle]="{'color': 'red'}" align="start">{{formErrors.firstname}}</md-hint> 
+          </md-input-container>
+        </md-grid-tile>
+        <md-grid-tile colspan="1" rowspan="4">
+          <md-input-container class="full-width margin-left-right">
+            <input mdInput placeholder="Last Name" formControlName="lastname" required>
+            <md-hint *ngIf="formErrors.lastname" [ngStyle]="{'color': 'red'}" align="start">{{formErrors.lastname}}</md-hint>  
+          </md-input-container>
+        </md-grid-tile>
+
+        <md-grid-tile colspan="2" rowspan="2">
+          <button md-raised-button class="full-width space-from-bottom" [disabled]="!form.valid">Save</button>
+        </md-grid-tile>
+        <md-grid-tile colspan="2" rowspan="1" *ngIf="errorMessage">
+          <md-card [ngStyle]="{'color': 'red'}">{{errorMessage}}</md-card>
+        </md-grid-tile>
+      </md-grid-list>
+  </form>

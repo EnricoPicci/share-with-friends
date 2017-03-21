@@ -86,12 +86,12 @@ describe('UserService', () => {
               break;
             default:
               // check for friends
-              if (user.friends.length > 0) {
+              if (user.getFriends().length > 0) {
                 console.log('DDD+ counter', counterOfChangesOfUserObservble, user);
                 testSubscription.unsubscribe();
-                  if (user.friends[0].nickName !== friendNickname) {
+                  if (user.getFriends()[0].nickName !== friendNickname) {
                   let errorString = 'the friend should have nicknmame ' + friendNickname;
-                  errorString = errorString + ' but has this one instead ' + user.friends[0].nickName;
+                  errorString = errorString + ' but has this one instead ' + user.getFriends()[0].nickName;
                   throw new Error(errorString);
                 }
               };
@@ -106,7 +106,7 @@ describe('UserService', () => {
       // add a friend
       console.log('after some time .... a friend is added');
       const friend1 = new Friend('first2', 'friend', friendNickname, 'my@buddy.com');
-      theUser.friends.push(friend1);
+      theUser.getFriends().push(friend1);
       userService.saveUser(theUser).then(() => {
         console.log('... then I logout ...');
         authService.logout().then(() => {
@@ -119,14 +119,14 @@ describe('UserService', () => {
             secondTestSubscription = userService.currentUser$.subscribe(
               user => {
                 if (user) {
-                  if (user.friends.length !== 1) {
-                    console.log('the friends of this user are wrong', user.friends);
+                  if (user.getFriends().length !== 1) {
+                    console.log('the friends of this user are wrong', user.getFriends());
                     throw new Error('User should have 1 friend');
                   }
                   console.log('NUMBER OF FRIEND TEST PASSED');
                   secondTestSubscription.unsubscribe();
                   // clean the friends and save back the user
-                  user.friends = [];
+                  user.resetFriends();
                   userService.saveUser(user);
                 }
               }

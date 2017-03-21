@@ -1,7 +1,5 @@
   
-  <button md-raised-button class="full-width space-from-bottom" (click)="error()">Error</button>
-  
-  <!--form [formGroup]="form" (ngSubmit)="onSubmit(form.value)" class="space-from-top margin-left-right" novalidate-->
+ <!--form [formGroup]="form" (ngSubmit)="onSubmit(form.value)" class="space-from-top margin-left-right" novalidate-->
   <form [formGroup]="form" class="space-from-top margin-left-right" novalidate>
       <md-grid-list cols="4" rowHeight="80px" class="full-width">
 
@@ -12,15 +10,29 @@
           </md-input-container>
         </md-grid-tile>
         <md-grid-tile colspan="2" rowspan="1">
-          <input placeholder="Image file" 
+          <input placeholder="Image file" multiple="multiple"
               type="file" required class="full-width margin-left-right"
               (change)="fileChangeEvent($event)">
         </md-grid-tile>
         <md-grid-tile colspan="3" rowspan="1">
-          <md-input-container class="full-width margin-left-right" type="password">
+          <md-input-container class="full-width margin-left-right">
             <input mdInput placeholder="Short description" formControlName="description" required>
             <md-hint *ngIf="formErrors.description" [ngStyle]="{'color': 'red'}" align="start">{{formErrors.description}}</md-hint>  
           </md-input-container>
+        </md-grid-tile>
+
+        <md-grid-tile colspan="4" rowspan="1">
+          Images
+        </md-grid-tile>
+        <md-grid-tile colspan="4" rowspan="1">
+          <md-grid-list cols="3" rowHeight="80px" class="full-width">
+            <md-grid-tile colspan="1" rowspan="1" *ngFor="let imageUrl of sharableThing?.getImageUrls()">
+              <img [src]="imageUrl" height="70px" width="70px">
+              <md-card-actions>
+                <button md-button (click)="removeImage(imageUrl)">DELETE</button>
+              </md-card-actions>
+            </md-grid-tile>
+          </md-grid-list>
         </md-grid-tile>
 
         <md-grid-tile colspan="4" rowspan="1">
@@ -31,9 +43,9 @@
             <!--md-grid-tile colspan="3" rowspan="1">
               <md-card class="section-header" (click)="addFriend()">The friends</md-card>
             </md-grid-tile-->
-            <md-grid-tile colspan="1" rowspan="1" *ngFor="let friendMail of sharableThing.friendEmails">
+            <md-grid-tile colspan="1" rowspan="1" *ngFor="let friendMail of sharableThing?.friendEmails">
               <md-card class="friend-card">
-                <md-card-content>{{friendMail}}</md-card-content>
+                <md-card-content>{{friendMail.email}}</md-card-content>
                 <md-card-actions>
                   <button md-button (click)="removeFriendEmail(friendMail)">DELETE</button>
                 </md-card-actions>

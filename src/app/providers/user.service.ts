@@ -31,7 +31,7 @@ export class UserService {
     this.saveUser(this.createUser(uid, name, email));
   }
 
-  private saveUser(user: User) {
+  saveUser(user: User) {
     const dbKey = this.getFirebaseUserKey(user);
     return this.af.database.object(dbKey).update(user);
   }

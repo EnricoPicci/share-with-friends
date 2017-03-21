@@ -52,7 +52,9 @@ describe('BookingService', () => {
     const images = [];
     const monetaryAmountAmount = 100;
     const bookerEmail = 'booking.test.booker@my.com';
-    const friendEmail = 'booking.test.friend@my.com';
+    const friendEmail = 'booking.test.asecondfriend@my.com';
+    const bookerEmailObj = {email: bookerEmail, notified: false};
+    const friendEmailObj = {email: friendEmail, notified: false};
     // booking data
     const fromDate = new Date(2017, 2, 2);
     const toDate = new Date(2017, 2, 2);
@@ -63,7 +65,7 @@ describe('BookingService', () => {
       console.log('START ADD BOOKING TEST');
       console.log('(ADD BOOKING)  Create a sharable thing to be booked later ...');
       const sharableThing1 = new SharableThing(null, name, description, [],
-                                    'fakeowner1@my.com', [friendEmail, bookerEmail], false, monetaryAmountAmount);
+                                    'fakeowner1@my.com', [friendEmailObj, bookerEmailObj], false, monetaryAmountAmount);
       sharableThingService.saveSharableThing(sharableThing1).then(() => {
         console.log('(ADD BOOKING)  ... then I logout ...');
         authService.logout().then(() => {

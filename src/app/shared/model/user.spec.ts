@@ -28,7 +28,8 @@ describe('User', () => {
           email: userEmail,
           name: userName,
           sharableThings: sharableThings,
-          friends: friends
+          friends: friends,
+          thingsOfferedToMeKeys: []
       };
     const user = User.fromJson(jsonObj);
     expect(user.authUid).toBe(authId);
