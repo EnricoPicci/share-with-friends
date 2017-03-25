@@ -3,6 +3,8 @@ import * as _ from 'lodash';
 import {environment} from '../../../environments/environment';
 
 import {MonetaryAmount} from './monetary-amount';
+import {User} from './user';
+import {Friend} from './friend';
 
 export class SharableThing {
     monetaryAmount: MonetaryAmount;
@@ -94,6 +96,20 @@ export class SharableThing {
     resetImages() {
         this.resetImageUrls();
         this.images = [];
+    }
+
+    getNotNotifiedEmails() {
+        return this.friendEmails.filter(friendEmail => !friendEmail.notified);
+    }
+
+    createMessageForFriend(user: User, friend: Friend, link: string) {
+        const subject = 'There is a thing for you';
+        const body = 'Dear ' + friend.firstName + ',\n'
+                        + user.name + ' would like to share with you a \"' + this.name + '\".\n'
+                        + 'Take a look at the following link ' + link + '.\n'
+                        + 'Ciao \n'
+                        + 'The sharing App';
+        return {subject, body};
     }
 
 }

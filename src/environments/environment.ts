@@ -11,6 +11,8 @@ export const environment = {
 
   imagePath: '/assets/images/',
 
-  defaultCoverImage: '/assets/images/share1.jpeg'
+  defaultCoverImage: '/assets/images/share1.jpeg',
+
+  sharableThingPageUrl: 'http://localhost:4200/sharableThing?sharableThingkey='
 
 };

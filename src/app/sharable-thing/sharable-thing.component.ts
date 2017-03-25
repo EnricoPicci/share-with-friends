@@ -63,7 +63,7 @@ export class SharableThingComponent implements OnInit, OnDestroy {
         this.route.queryParams.subscribe(
           queryParams => {
             console.log('my params', queryParams);
-            if (queryParams['sharableThingkey'] === '') {
+            if (queryParams['sharableThingkey'] === '' && !this.sharableThing) {
               this.sharableThing = new SharableThing(null, null, null);
               this.sharableThing.ownerEmail = this.currentUser.email;
               this.sharableThingService.getUniqueKeyForSharableThing(this.sharableThing);
@@ -126,12 +126,14 @@ export class SharableThingComponent implements OnInit, OnDestroy {
     console.log('the thing', this.sharableThing);
     this.sharableThing.name = formData.name;
     this.sharableThing.description = formData.description;
-    this.sharableThingService
-          .uploadImages(this.filesSelected, this.sharableThing)
-          .then(data => {
-            console.log('after uploading', this.sharableThing);
-            this.sharableThingService.saveSharableThing(this.sharableThing);
-            this.router.navigate(['sharableThingsList'], {skipLocationChange: true});
+    console.log('sharable thing to be saved', this.sharableThing);
+    this.sharableThingService.saveSharableThing(this.sharableThing)
+          .then(() => {
+            this.sharableThingService.sendMailToNotNotifiedFriends(this.currentUser, this.sharableThing);
+            // the user is saved here to save the friends we may have added
+            this.userService.saveUser(this.currentUser)
+                            .then(() => this.router.navigate(['sharableThingsList'], {skipLocationChange: true}))
+                             .catch(err => console.log(err));
           })
           .catch(err => console.log(err));
   }
@@ -142,6 +144,7 @@ export class SharableThingComponent implements OnInit, OnDestroy {
       console.log('firend', friend);
       if (friend && friend.email) {
         this.sharableThing.addFriendEmail(friend.email, false);
+        this.currentUser.addFriend(friend);
       }
     });
   }

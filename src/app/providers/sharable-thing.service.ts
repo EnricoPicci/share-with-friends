@@ -7,8 +7,10 @@ import {Subject, Observable} from 'rxjs/Rx';
 import {environment} from '../../environments/environment';
 import {firebaseConfig} from '../../environments/firebase.config';
 import {SharableThing} from '../shared/model/sharable-thing';
-// import {User} from '../shared/model/user';
+import {User} from '../shared/model/user';
 import {UserService} from './user.service';
+import {MailSenderEmailjsService} from './mail-sender-emailjs.service';
+import {Friend} from '../shared/model/friend';
 
 const SHARABLETHINGS = '/sharablethings/';
 
@@ -18,7 +20,10 @@ declare var Email: any;
 @Injectable()
 export class SharableThingService {
 
-  constructor(private af: AngularFire, @Inject(FirebaseApp) private firebaseApp: any, private userService: UserService) {}
+  constructor(private af: AngularFire,
+              @Inject(FirebaseApp) private firebaseApp: any,
+              private userService: UserService,
+              private mailSenderService: MailSenderEmailjsService) {}
 
   loadSharableThingsForOwner(email: string) {
     return this.af.database.list(this.getFirebaseRef(), {
@@ -75,6 +80,7 @@ export class SharableThingService {
       delete sharableThing.$key;
       ret = listObservable.update(theKey, sharableThing)
                 .then(() => {
+                  listObservable.remove(theKey + '/temporary');
                   sharableThing.$key = theKey;
                   this.updateThingsOfferedToFriends(sharableThing);
                 })
@@ -103,6 +109,22 @@ export class SharableThingService {
         console.log('getUniqueKeyForSharableThing', sharableThing);
       })
       .catch(err => console.error('error in getUniqueKeyForSharableThing', err));
+  }
+
+  sendMailToNotNotifiedFriends(currentUser: User, sharableThing: SharableThing) {
+    const notNotifiedFriendEmails = sharableThing.getNotNotifiedEmails();
+    for (let i = 0; i < notNotifiedFriendEmails.length; i++) {
+      const friendEmail = notNotifiedFriendEmails[i];
+      const friend = currentUser.getFriend(friendEmail.email);
+      const link = environment.sharableThingPageUrl + sharableThing.$key + '&user=' + currentUser.email;
+      const message = sharableThing.createMessageForFriend(currentUser, friend, link);
+      this.mailSenderService.sendMail(currentUser.email,
+                                      friendEmail.email,
+                                      message.subject,
+                                      message.body);
+      friendEmail.notified = true;
+    }
+    this.af.database.object(this.getFirebaseObjRef(sharableThing.$key) + '/friendEmails').update(sharableThing.getFriendEmails());
   }
 
   uploadImages(images: FileList, sharableThing: SharableThing) {

@@ -8,6 +8,7 @@ import { User } from '../shared/model/user';
 import { SharableThing } from '../shared/model/sharable-thing';
 import {Friend} from '../shared/model/friend';
 import { SharableThingService } from './sharable-thing.service';
+import {MailSenderEmailjsService} from './mail-sender-emailjs.service';
 
 import {createUserAndLogin, userEmail, userPwd, userName, sleep} from './test-common-functions';
 
@@ -18,7 +19,7 @@ describe('UserService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [UserService, AuthService, SharableThingService],
+      providers: [UserService, AuthService, SharableThingService, MailSenderEmailjsService],
       imports: [
         AngularFireModule.initializeApp(firebaseConfig, authConfig)
       ]

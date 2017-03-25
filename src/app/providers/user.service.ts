@@ -54,7 +54,10 @@ export class UserService {
         }
       );
       ret = this.af.database.object(this.getFirebaseRef() + userDbKey)
-                .map(User.fromJson);
+                .map(jsonObj => {
+                  // console.log('user json', jsonObj);
+                  return User.fromJson(jsonObj);
+                });
     }
     return ret;
   }

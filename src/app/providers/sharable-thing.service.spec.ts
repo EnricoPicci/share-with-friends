@@ -8,6 +8,7 @@ import { SharableThing } from '../shared/model/sharable-thing';
 import { AuthService } from './auth.service';
 import {UserService} from './user.service';
 import { User } from '../shared/model/user';
+import {MailSenderEmailjsService} from './mail-sender-emailjs.service';
 
 import {createUserAndLogin, sleep, userEmail, userPwd} from './test-common-functions';
 
@@ -18,7 +19,7 @@ describe('SharableThingService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [SharableThingService, AuthService, UserService],
+      providers: [SharableThingService, AuthService, UserService, MailSenderEmailjsService],
       imports: [
         AngularFireModule.initializeApp(firebaseConfig, authConfig)
       ]
@@ -76,85 +77,86 @@ describe('SharableThingService', () => {
             }
             console.log('... then I logout (ADD SHARABLE THING FOR SOME FRIENDs)...');
             authService.logout().then(() => {
-            console.log('... then I wait some more time (ADD SHARABLE THING FOR SOME FRIENDs)...');
-            sleep(1000).then(() => {
-                console.log('... then I login again (ADD SHARABLE THING FOR SOME FRIENDs) ...');
-                authService.login(userEmail, userPwd).then(() => {
-                    console.log('... and check if I find the thing that has been offered to me (ADD SHARABLE THING FOR SOME FRIENDs) ...');
-                    const obs1 = userService.getUser(theUser.email).first();
-                    const obs2 = userService.getUser(theSecondFriendEmail).first();
-                    const obs3 = sharableThingService.loadSharableThing(sharableThing1.$key).first();
-                    const obs4 = sharableThingService.loadActiveSharableThingsForOwner(theSharableThingOwner)
-                                                    .first()
-                                                    .do(things => console.log('the things', things))
-                                                    .map(things => things[0])
-                                                    .do(thing => console.log('the thing', thing));
-                    Observable.merge(obs1, obs2, obs3, obs4).subscribe(
-                        userOrSharableThing => {
-                            if (!(userOrSharableThing instanceof User ||
-                                    userOrSharableThing instanceof SharableThing)) {
-                                console.log('we expect only instance of type User or SharableThing', userOrSharableThing);
-                                throw new Error('we expect only instance of type User or SharableThing');
-                            } else
-                            if (userOrSharableThing instanceof User
-                                    && userOrSharableThing.thingsOfferedToMeKeys.length !== 1) {
-                                console.log('the user should have only one thing offered to him', userOrSharableThing);
-                                throw new Error('the user should have only one thing offered to him');
-                            } else
-                            if (userOrSharableThing instanceof User
-                                    && userOrSharableThing.thingsOfferedToMeKeys[0] !== sharableThing1.$key) {
-                                console.log('the user should have this sharabel thing', sharableThing1);
-                                throw new Error('the user has the wrong sharable thing');
-                            } else
-                            if (userOrSharableThing instanceof SharableThing && userOrSharableThing.$key !== sharableThing1.$key) {
-                                console.log('the sharable thing shuold be this', userOrSharableThing);
-                                throw new Error('the sharable thing is not right');
-                            }
-                        },
-                        err => console.log,
-                        () => {
-                            console.log('ADD SHARABLE THING FOR SOME FRIENDs TEST PASSED');
-                            console.log('... and then remove the sharable thing (ADD SHARABLE THING FOR SOME FRIENDs) ...');
-                            sharableThingService.removeSharableThingObs(sharableThing1).subscribe(
-                                val => console.log('remove val ......', val),
-                                err => console.log('err .......', err),
-                                () => {
-                                    // tslint:disable-next-line:max-line-length
-                                    console.log('... and check that there is no sharable thing any more (ADD SHARABLE THING FOR SOME FRIENDs) ...');
-                                    const obs11 = userService.getUser(theUser.email).first();
-                                    const obs22 = userService.getUser(theSecondFriendEmail).first();
-                                    const obs33 = sharableThingService.loadSharableThing(sharableThing1.$key).first();
-                                    Observable.merge(obs11, obs22, obs33).subscribe(
-                                        userOrSharableThing => {
-                                            if (!(userOrSharableThing instanceof User ||
-                                                    userOrSharableThing instanceof SharableThing)) {
-                                                console.log('we ex[ect only instance of type User or SharableThing', userOrSharableThing);
-                                                throw new Error('we ex[ect only instance of type User or SharableThing');
-                                            }
-                                            // tslint:disable-next-line:one-line
-                                            else if (userOrSharableThing instanceof User
-                                                    && userOrSharableThing.thingsOfferedToMeKeys.length !== 0) {
-                                                console.log('the user should have no things offered to him', userOrSharableThing);
-                                                throw new Error('the user should have no things offered to him');
-                                            }
-                                            // tslint:disable-next-line:one-line
-                                            else if (userOrSharableThing instanceof SharableThing &&
-                                                userOrSharableThing.removed === false) {
-                                                console.log('the sharable thing is not right', userOrSharableThing);
-                                                throw new Error('the sharable thing is not right');
-                                            }
-                                        },
-                                        err => console.log(err),
-                                        () => {
-                                            console.log('REMOVE SHARABLE THING FROM SOME FRIENDs TEST PASSED');
-                                        }
-                                    );
+                console.log('... then I wait some more time (ADD SHARABLE THING FOR SOME FRIENDs)...');
+                sleep(1000).then(() => {
+                    console.log('... then I login again (ADD SHARABLE THING FOR SOME FRIENDs) ...');
+                    authService.login(userEmail, userPwd).then(() => {
+                        console.log('... and check if I find the thing that has been offered to me (ADD SHARABLE THING FOR SOME FRIENDs)');
+                        const obs1 = userService.getUser(theUser.email).first();
+                        const obs2 = userService.getUser(theSecondFriendEmail).first();
+                        const obs3 = sharableThingService.loadSharableThing(sharableThing1.$key).first();
+                        const obs4 = sharableThingService.loadActiveSharableThingsForOwner(theSharableThingOwner)
+                                                        .first()
+                                                        .do(things => console.log('the things', things))
+                                                        .map(things => things[0])
+                                                        .do(thing => console.log('the thing', thing));
+                        Observable.merge(obs1, obs2, obs3, obs4).subscribe(
+                            userOrSharableThing => {
+                                if (!(userOrSharableThing instanceof User ||
+                                        userOrSharableThing instanceof SharableThing)) {
+                                    console.log('we expect only instance of type User or SharableThing', userOrSharableThing);
+                                    throw new Error('we expect only instance of type User or SharableThing');
+                                } else
+                                if (userOrSharableThing instanceof User
+                                        && userOrSharableThing.thingsOfferedToMeKeys.length !== 1) {
+                                    console.log('the user should have only one thing offered to him', userOrSharableThing);
+                                    throw new Error('the user should have only one thing offered to him');
+                                } else
+                                if (userOrSharableThing instanceof User
+                                        && userOrSharableThing.thingsOfferedToMeKeys[0] !== sharableThing1.$key) {
+                                    console.log('the user should have this sharabel thing', sharableThing1);
+                                    throw new Error('the user has the wrong sharable thing');
+                                } else
+                                if (userOrSharableThing instanceof SharableThing && userOrSharableThing.$key !== sharableThing1.$key) {
+                                    console.log('the sharable thing shuold be this', userOrSharableThing);
+                                    throw new Error('the sharable thing is not right');
                                 }
-                            );
-                        }
-                    );
+                            },
+                            err => console.log,
+                            () => {
+                                console.log('ADD SHARABLE THING FOR SOME FRIENDs TEST PASSED');
+                                console.log('... and then remove the sharable thing (ADD SHARABLE THING FOR SOME FRIENDs) ...');
+                                sharableThingService.removeSharableThingObs(sharableThing1).subscribe(
+                                    val => console.log('remove val ......', val),
+                                    err => console.log('err .......', err),
+                                    () => {
+                                        // tslint:disable-next-line:max-line-length
+                                        console.log('... and check that there is no sharable thing any more (ADD SHARABLE THING FOR SOME FRIENDs) ...');
+                                        const obs11 = userService.getUser(theUser.email).first();
+                                        const obs22 = userService.getUser(theSecondFriendEmail).first();
+                                        const obs33 = sharableThingService.loadSharableThing(sharableThing1.$key).first();
+                                        Observable.merge(obs11, obs22, obs33).subscribe(
+                                            userOrSharableThing => {
+                                                if (!(userOrSharableThing instanceof User ||
+                                                        userOrSharableThing instanceof SharableThing)) {
+                                                    console.log('we ex[ect only instance of type User or SharableThing',
+                                                                userOrSharableThing);
+                                                    throw new Error('we ex[ect only instance of type User or SharableThing');
+                                                }
+                                                // tslint:disable-next-line:one-line
+                                                else if (userOrSharableThing instanceof User
+                                                        && userOrSharableThing.thingsOfferedToMeKeys.length !== 0) {
+                                                    console.log('the user should have no things offered to him', userOrSharableThing);
+                                                    throw new Error('the user should have no things offered to him');
+                                                }
+                                                // tslint:disable-next-line:one-line
+                                                else if (userOrSharableThing instanceof SharableThing &&
+                                                    userOrSharableThing.removed === false) {
+                                                    console.log('the sharable thing is not right', userOrSharableThing);
+                                                    throw new Error('the sharable thing is not right');
+                                                }
+                                            },
+                                            err => console.log(err),
+                                            () => {
+                                                console.log('REMOVE SHARABLE THING FROM SOME FRIENDs TEST PASSED');
+                                            }
+                                        );
+                                    }
+                                );
+                            }
+                        );
+                    });
                 });
-            });
             });
         });
       });

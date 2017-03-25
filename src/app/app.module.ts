@@ -13,6 +13,7 @@ import 'hammerjs';
 import {AuthService} from './providers/auth.service';
 import {UserService} from './providers/user.service';
 import {SharableThingService} from './providers/sharable-thing.service';
+import {MailSenderEmailjsService} from './providers/mail-sender-emailjs.service';
 
 import { AppComponent } from './app.component';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
@@ -23,6 +24,7 @@ import { SharableThingListComponent } from './sharable-thing-list/sharable-thing
 import { SharableThingComponent } from './sharable-thing/sharable-thing.component';
 import {AddFriendEmailComponent} from './sharable-thing/add-friend-email-dialog.component';
 import { FriendFormComponent } from './friend-form/friend-form.component';
+import { SharableThingShowcaseComponent } from './sharable-thing-showcase/sharable-thing-showcase.component';
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent,
@@ -62,7 +64,8 @@ const appRoutes: Routes = [
     SharableThingListComponent,
     SharableThingComponent,
     AddFriendEmailComponent,
-    FriendFormComponent
+    FriendFormComponent,
+    SharableThingShowcaseComponent
   ],
   imports: [
     BrowserModule,
@@ -72,7 +75,7 @@ const appRoutes: Routes = [
     MaterialModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [AuthService, UserService, SharableThingService],
+  providers: [AuthService, UserService, SharableThingService, MailSenderEmailjsService],
   bootstrap: [AppComponent],
   entryComponents: [AddFriendEmailComponent]
 })

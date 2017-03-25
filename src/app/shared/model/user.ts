@@ -12,7 +12,7 @@ export class User {
         public email?: string,
         public dbKey?: string,
         sharableThings?,
-        friends?,
+        friends?: Array<Friend>,
         thingsOfferedToMeKeys?
     ) {
         if (sharableThings) {
@@ -35,7 +35,21 @@ export class User {
         return this.friends;
     }
     addFriend(friend: Friend) {
-        this.friends.push(friend);
+        if (this.isNewFriend(friend)) {
+            this.friends.push(friend);
+        }
+    }
+    isNewFriend(friend: Friend) {
+        return this.friends.filter(friendIterated => friendIterated.email === friend.email)
+                                                    .length === 0;
+    }
+    getFriend(email: string) {
+        let ret = null;
+        const friendArray = this.friends.filter(friendIterated => friendIterated.email === email);
+        if (friendArray.length > 0) {
+            ret = friendArray[0];
+        }
+        return ret;
     }
     resetFriends() {
         this.friends = [];
