@@ -116,7 +116,7 @@ export class SharableThingService {
     for (let i = 0; i < notNotifiedFriendEmails.length; i++) {
       const friendEmail = notNotifiedFriendEmails[i];
       const friend = currentUser.getFriend(friendEmail.email);
-      const link = environment.sharableThingPageUrl + sharableThing.$key + '&user=' + currentUser.email;
+      const link = environment.sharableThingShowcasePageUrl + sharableThing.$key + '&user=' + friendEmail.email;
       const message = sharableThing.createMessageForFriend(currentUser, friend, link);
       this.mailSenderService.sendMail(currentUser.email,
                                       friendEmail.email,

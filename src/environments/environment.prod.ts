@@ -5,4 +5,6 @@ export const environment = {
 
   imagePath: '/assets/images/',
 
+  sharableThingShowcasePageUrl: 'http://localhost:4200/sharableThingShowcase?sharableThingkey='
+
 };

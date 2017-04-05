@@ -65,9 +65,10 @@ export class SharableThing {
         if (this.coverImageUrl) {
             return this.coverImageUrl;
         }
-        this.coverImageUrl = environment.defaultCoverImage;
         if (this.images.length > 0) {
             this.coverImageUrl = this.getRandomImageUrl();
+        } else {
+            this.coverImageUrl = environment.defaultCoverImage;
         }
         return this.coverImageUrl;
     }
@@ -85,6 +86,9 @@ export class SharableThing {
     }
     getImageUrls() {
         const ret = Object.keys(this.imageUrls).map(key => this.imageUrls[key]);
+        if (ret.length === 0) {
+            ret.push(environment.defaultCoverImage);
+        }
         return ret;
     }
     getImageFileNameForUrl(url: string) {

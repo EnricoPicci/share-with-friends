@@ -5,7 +5,6 @@ import 'rxjs/add/operator/map';
 
 import {environment} from '../../environments/environment';
 import {AuthInfo} from '../shared/model/auth-info';
-import {User} from '../shared/model/user';
 
 @Injectable()
 export class AuthService {

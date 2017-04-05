@@ -3,6 +3,7 @@ import { Validators, FormGroup, FormBuilder} from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import {AuthService} from '../providers/auth.service';
+import {SessionService} from '../providers/session.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -31,11 +32,15 @@ export class LoginFormComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
               private authService: AuthService,
               private router: Router,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private session: SessionService) {
     this.buildForm();
    }
 
   ngOnInit() {
+    if (this.session.userMail) {
+      this.form.controls['email'].setValue(this.session.userMail);
+    }
   }
 
   buildForm(): void {
@@ -53,10 +58,19 @@ export class LoginFormComponent implements OnInit {
 
   onSubmit(formData) {
     const formValue = this.form.value;
-    this.authService.login(formValue.email, formValue.password).catch(err => {
-      console.log('error at login', err);
-      this.failedLoginMessage = 'Login failed. Reason: ' + err.message;
-    });
+    this.authService.login(formValue.email, formValue.password)
+                    .then(() => {
+                      let path = 'sharableThingsList';
+                      if (this.session.sharableThingKey) {
+                        path = 'sharableThingShowcase';
+                      }
+                      console.log('Passing from here', path);
+                      this.router.navigate([path], {skipLocationChange: true});
+                    })
+                    .catch(err => {
+                      console.log('error at login', err);
+                      this.failedLoginMessage = 'Login failed. Reason: ' + err.message;
+                    });
   }
 
   onValueChanged(data?: any) {

@@ -55,4 +55,14 @@ export class User {
         this.friends = [];
     }
 
+    // returns the UID which is used when a user is created before he actually signup
+    // this is the case when somebody adds a friend to a sharableThing using frined's email
+    // but the friend has not yet signup
+    getDefaultUid() {
+        return 'uid';
+    }
+    hasUserAlreadySignedUp() {
+        return this.authUid !== this.getDefaultUid();
+    }
+
 }

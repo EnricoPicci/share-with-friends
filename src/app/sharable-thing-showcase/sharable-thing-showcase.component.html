@@ -1,3 +1,38 @@
-<p>
-  sharable-thing-showcase works!
-</p>
+
+<!--md-grid-list cols="4" rowHeight="300px" class="full-width"-->
+<md-grid-list cols="4" rowHeight="51px" class="full-width">
+
+  <md-grid-tile colspan="4" rowspan="1">
+    {{sharableThing?.name}}
+  </md-grid-tile>
+  <md-grid-tile colspan="4" rowspan="1">
+    {{sharableThing?.description}}
+  </md-grid-tile>
+
+  <!--md-grid-tile colspan="4" rowspan="4">
+    {{sharableThing?.description}}
+    <swiper [config]="config" #usefulSwiper *ngIf="sharableThing">
+        <div class="swiper-wrapper">
+            <img class="swiper-slide" *ngFor="let image of sharableThing.getImageUrls()" [src]="image" height="70px" width="70px">
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </swiper>
+  </md-grid-tile-->
+
+  <md-grid-tile colspan="1" rowspan="4" *ngFor="let imageUrl of sharableThing?.getImageUrls()">
+    <img [src]="imageUrl" height="200px" width="200px">
+  </md-grid-tile>
+
+</md-grid-list>
+
+
+    <!--swiper [config]="config" #usefulSwiper *ngIf="sharableThing">
+        <div class="swiper-wrapper">
+            <img class="swiper-slide" *ngFor="let image of sharableThing.getImageUrls()" [src]="image" height="70px" width="70px">
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </swiper-->

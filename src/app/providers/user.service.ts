@@ -25,9 +25,6 @@ export class UserService {
     return user;
   }
   private createAndSaveUser(uid: string, name: string, email: string) {
-    // const dbKey = this.getDbKey(email);
-    // const user = new User(uid, name, email, dbKey);
-    // console.log('creation of user', user);
     this.saveUser(this.createUser(uid, name, email));
   }
 
@@ -45,10 +42,15 @@ export class UserService {
       ret = subject.asObservable();
     } else {
       const userDbKey = this.getDbKey(authState.auth.email);
-      const createUserIfNeededSubscription = this.af.database.object(this.getFirebaseRef() + userDbKey).subscribe(
+      const createUserIfNeededSubscription = this.af.database.object(this.getFirebaseRef() + userDbKey)
+                                                              .map(User.fromJson).subscribe(
         user => {
-          if (!user.email) {
-            this.createAndSaveUser(authState.uid, authState.auth.displayName, authState.auth.email);
+          if (!user.hasUserAlreadySignedUp()) {
+            // this.createAndSaveUser(authState.uid, authState.auth.displayName, authState.auth.email);
+            user.authUid = authState.uid;
+            user.name = authState.auth.displayName;
+            user.email = authState.auth.email;
+            this.saveUser(user);
             createUserIfNeededSubscription.unsubscribe();
           }
         }
@@ -87,18 +89,6 @@ export class UserService {
           let thisUser = user;
           if (!user.email) {
             thisUser = this.createUser('uid', 'name', friendEmail);
-          // } else {
-          //   if (user.thingsOfferedToMeKeys.indexOf(sharableThingKey) < 0) {
-          //     user.thingsOfferedToMeKeys.push(sharableThingKey);
-          //     firebaseUserObj.update(user);
-          //   }
-            // // we need to check if createUserIfNeededSubscription is not null since the first time this callback is entered
-            // // the variable createUserIfNeededSubscription is in fact null (probably for reasons not clear to me the assignement
-            // // of the value to the variable is done at a later stage) - this means that this callback is unsubscribed only
-            // // at the second time it is entered (i.e. the callback is entered 2 times)
-            // if (createUserIfNeededSubscription) {
-            //   createUserIfNeededSubscription.unsubscribe();
-            // }
           }
           if (thisUser.thingsOfferedToMeKeys.indexOf(sharableThingKey) < 0) {
             thisUser.thingsOfferedToMeKeys.push(sharableThingKey);

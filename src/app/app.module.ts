@@ -10,10 +10,13 @@ import {firebaseConfig, authConfig} from '../environments/firebase.config';
 import { MaterialModule } from '@angular/material';
 import 'hammerjs';
 
+import { SwiperModule } from 'angular2-useful-swiper';
+
 import {AuthService} from './providers/auth.service';
 import {UserService} from './providers/user.service';
 import {SharableThingService} from './providers/sharable-thing.service';
 import {MailSenderEmailjsService} from './providers/mail-sender-emailjs.service';
+import {SessionService} from './providers/session.service';
 
 import { AppComponent } from './app.component';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
@@ -27,18 +30,6 @@ import { FriendFormComponent } from './friend-form/friend-form.component';
 import { SharableThingShowcaseComponent } from './sharable-thing-showcase/sharable-thing-showcase.component';
 
 const appRoutes: Routes = [
-    { path: '', component: HomeComponent,
-      children: [
-          {
-            path: 'signup',
-            component: SignupFormComponent
-          },
-          {
-            path: '',
-            component: LoginFormComponent
-          }
-        ]
-    },
     {
       path: 'sharableThingsList',
       component: SharableThingListComponent
@@ -47,10 +38,30 @@ const appRoutes: Routes = [
       path: 'sharableThing',
       component: SharableThingComponent
     },
-    { path: '',
-        redirectTo: '/login',
-        pathMatch: 'full'
+    {
+      path: 'sharableThingShowcase',
+      component: SharableThingShowcaseComponent
     },
+    { path: '', component: HomeComponent,
+      children: [
+          {
+            path: 'signup',
+            component: SignupFormComponent
+          },
+          {
+            path: 'login',
+            component: LoginFormComponent
+          },
+          {
+            path: '',
+            component: LoginFormComponent
+          }
+        ]
+    },
+    // { path: '',
+    //     redirectTo: '/login',
+    //     pathMatch: 'full'
+    // },
     { path: '**', component: PageNotFoundComponent }
 ];
 
@@ -73,9 +84,10 @@ const appRoutes: Routes = [
     HttpModule,
     AngularFireModule.initializeApp(firebaseConfig, authConfig),
     MaterialModule,
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes),
+    SwiperModule
   ],
-  providers: [AuthService, UserService, SharableThingService, MailSenderEmailjsService],
+  providers: [AuthService, UserService, SharableThingService, MailSenderEmailjsService, SessionService],
   bootstrap: [AppComponent],
   entryComponents: [AddFriendEmailComponent]
 })

@@ -3,6 +3,10 @@
 
 import { Injectable } from '@angular/core';
 
+// import '../../assets/lib/emailjs.min';
+
+// declare var emailjs: any;
+
 @Injectable()
 export class MailSenderEmailjsService {
 

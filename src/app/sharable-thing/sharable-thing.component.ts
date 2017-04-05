@@ -41,6 +41,7 @@ export class SharableThingComponent implements OnInit, OnDestroy {
   sharableThing: SharableThing;
   currentUser: User;
   currentUserSubscription: Subscription;
+  sharableThingSubscription: Subscription;
 
   filesSelected: FileList;
 
@@ -68,7 +69,7 @@ export class SharableThingComponent implements OnInit, OnDestroy {
               this.sharableThing.ownerEmail = this.currentUser.email;
               this.sharableThingService.getUniqueKeyForSharableThing(this.sharableThing);
             } else {
-              this.sharableThingService.loadSharableThing(queryParams['sharableThingkey']).subscribe(
+              this.sharableThingSubscription = this.sharableThingService.loadSharableThing(queryParams['sharableThingkey']).subscribe(
                 sharableThing => {
                   this.sharableThing = sharableThing;
                   this.form.controls['name'].setValue(sharableThing.name);
@@ -83,6 +84,7 @@ export class SharableThingComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.currentUserSubscription.unsubscribe();
+    this.sharableThingSubscription.unsubscribe();
   }
 
   buildForm(): void {

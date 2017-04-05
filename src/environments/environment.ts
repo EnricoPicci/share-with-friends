@@ -13,6 +13,6 @@ export const environment = {
 
   defaultCoverImage: '/assets/images/share1.jpeg',
 
-  sharableThingPageUrl: 'http://localhost:4200/sharableThing?sharableThingkey='
+  sharableThingShowcasePageUrl: 'http://localhost:4200/sharableThingShowcase?sharableThingkey='
 
 };
