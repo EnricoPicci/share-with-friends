@@ -7,28 +7,24 @@ import { AuthService } from './auth.service';
 import { User } from '../shared/model/user';
 import { SharableThing } from '../shared/model/sharable-thing';
 import {Friend} from '../shared/model/friend';
-import { SharableThingService } from './sharable-thing.service';
-import {MailSenderEmailjsService} from './mail-sender-emailjs.service';
 
 import {createUserAndLogin, userEmail, userPwd, userName, sleep} from './test-common-functions';
 
 describe('UserService', () => {
   let userService: UserService;
   let authService: AuthService;
-  let sharableThingsService: SharableThingService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [UserService, AuthService, SharableThingService, MailSenderEmailjsService],
+      providers: [UserService, AuthService],
       imports: [
         AngularFireModule.initializeApp(firebaseConfig, authConfig)
       ]
     });
-    inject([UserService, AuthService, SharableThingService],
-              (service1: UserService, service2: AuthService, service3: SharableThingService) => {
+    inject([UserService, AuthService],
+              (service1: UserService, service2: AuthService) => {
         userService = service1;
         authService = service2;
-        sharableThingsService = service3;
     })();
   });
 

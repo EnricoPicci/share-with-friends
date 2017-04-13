@@ -2,6 +2,8 @@ import {SharableThing} from './sharable-thing';
 import {Friend} from './friend';
 
 export class User {
+    public static defaultAuthUid = 'uid';
+
     public sharableThings = new Array<SharableThing>();
     private friends = new Array<Friend>();
     public thingsOfferedToMeKeys = new Array<string>();
@@ -15,6 +17,9 @@ export class User {
         friends?: Array<Friend>,
         thingsOfferedToMeKeys?
     ) {
+        if (!authUid) {
+            this.authUid = User.defaultAuthUid;
+        }
         if (sharableThings) {
             this.sharableThings = sharableThings;
         };
@@ -55,14 +60,8 @@ export class User {
         this.friends = [];
     }
 
-    // returns the UID which is used when a user is created before he actually signup
-    // this is the case when somebody adds a friend to a sharableThing using frined's email
-    // but the friend has not yet signup
-    getDefaultUid() {
-        return 'uid';
-    }
     hasUserAlreadySignedUp() {
-        return this.authUid !== this.getDefaultUid();
+        return this.authUid && this.authUid !== User.defaultAuthUid;
     }
 
 }

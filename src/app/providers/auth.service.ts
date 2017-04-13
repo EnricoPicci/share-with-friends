@@ -14,16 +14,16 @@ export class AuthService {
 
   constructor(private af: AngularFire) {
     this.authState$ = this.af.auth;
-    this.af.auth.map(auth => {
-      const authInfo = new AuthInfo();
-      if (auth) {
-        authInfo.$uid = auth.uid;
-        authInfo.authenticated = true;
-      } else {
-        authInfo.authenticated = false;
-      }
-      return authInfo;
-    });
+    // this.af.auth.map(auth => {
+    //   const authInfo = new AuthInfo();
+    //   if (auth) {
+    //     authInfo.$uid = auth.uid;
+    //     authInfo.authenticated = true;
+    //   } else {
+    //     authInfo.authenticated = false;
+    //   }
+    //   return authInfo;
+    // });
     this.af.auth.subscribe(val => this.authState = val);
   }
 
@@ -53,18 +53,18 @@ export class AuthService {
       return this.af.auth.logout();
   }
 
-  private fromFirebaseAuthPromise(promise): Observable<any> {
-    const subject = new Subject<any>();
-    promise
-        .then(res => {
-                subject.next(res);
-                subject.complete();
-            },
-            err => {
-                subject.error(err);
-                subject.complete();
-            });
-    return subject.asObservable();
-  }
+  // private fromFirebaseAuthPromise(promise): Observable<any> {
+  //   const subject = new Subject<any>();
+  //   promise
+  //       .then(res => {
+  //               subject.next(res);
+  //               subject.complete();
+  //           },
+  //           err => {
+  //               subject.error(err);
+  //               subject.complete();
+  //           });
+  //   return subject.asObservable();
+  // }
 
 }

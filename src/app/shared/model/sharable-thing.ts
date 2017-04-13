@@ -5,11 +5,15 @@ import {environment} from '../../../environments/environment';
 import {MonetaryAmount} from './monetary-amount';
 import {User} from './user';
 import {Friend} from './friend';
+import {CalendarBook} from './calendar-book';
+import {CalendarBookJsonInterface} from './calendar-book-json.interface';
+import {Booking} from './booking';
 
 export class SharableThing {
     monetaryAmount: MonetaryAmount;
     private imageUrls: {[fileName: string]: string} = {};
     private coverImageUrl: string;
+    private calendarBook: CalendarBook;
 
     constructor(
         public $key: string,
@@ -20,11 +24,14 @@ export class SharableThing {
         private friendEmails?: Array<{email: string, notified: boolean}>,
         public removed?: boolean,
         daylyChargeAmount?: number,
-        daylyChargeCurrency?: string) {
+        daylyChargeCurrency?: string,
+        calendarBookJson?: CalendarBookJsonInterface) {
             this.monetaryAmount = new MonetaryAmount(daylyChargeAmount, daylyChargeCurrency);
             if (!this.images) {this.images = []; }
             if (!this.friendEmails) {this.friendEmails = []; }
             if (!this.removed) {this.removed = false; }
+            const calendarBook = new CalendarBook(calendarBookJson);
+            this.setCalendarBook(calendarBook);
     }
 
     // tslint:disable-next-line:member-ordering
@@ -114,6 +121,28 @@ export class SharableThing {
                         + 'Ciao \n'
                         + 'The sharing App';
         return {subject, body};
+    }
+
+    getCalendarBook() {
+        return this.calendarBook;
+    }
+    setCalendarBook(calendarBook: CalendarBook) {
+        this.calendarBook = calendarBook;
+    }
+
+    addBooking(from: Date, to: Date, userBookingEmail: string) {
+        let booking: Booking;
+        if (this.calendarBook.isDateIntervalFree(from, to)) {
+            booking = new Booking(null , from, to, this.$key, userBookingEmail, false);
+            this.calendarBook.addBooking(booking);
+        }
+        return booking;
+        // const booking = new Booking(null , from, to, this.$key, userBookingEmail, false);
+        // this.calendarBook.addBooking(booking);
+        // return booking;
+    }
+    removeBooking(booking: Booking) {
+        this.calendarBook.removeBooking(booking);
     }
 
 }

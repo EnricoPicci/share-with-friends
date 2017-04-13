@@ -7,6 +7,7 @@ import {Subject, Observable} from 'rxjs/Rx';
 import {environment} from '../../environments/environment';
 import {firebaseConfig} from '../../environments/firebase.config';
 import {Booking} from '../shared/model/booking';
+import {BookingRecord} from './booking-record';
 
 const BOOKINGS = '/bookings/';
 
@@ -33,15 +34,27 @@ export class BookingService {
   }
 
   saveBooking(booking: Booking) {
+    const bookingRecord: BookingRecord = {
+      from: booking.from.toISOString(),
+      to: booking.to.toISOString(),
+      monetaryAmount: {amount: booking.monetaryAmount.amount, currency: booking.monetaryAmount.currency},
+      sharableThingKey: booking.sharableThingKey,
+      userBookingEmail: booking.userBookingEmail,
+      removed: booking.removed
+    };
+    booking['start'] = booking.from.toISOString();
+    // const bookingJson = JSON.stringify(booking);
     let ret: firebase.Thenable<any>;
     const listObservable =  this.af.database.list(this.getFirebaseRef());
+    console.log(' SAVE BOOKING JSON', booking);
     if (!booking.$key) {
+      console.log(' SAVE BOOKING NO KEY', booking);
       delete booking.$key;
-      ret = listObservable.push(booking).then((item) => {
+      ret = listObservable.push(bookingRecord).then((item) => {
         booking.$key = item.key;
       });
     } else {
-      ret = listObservable.update(booking.$key, booking);
+      ret = listObservable.update(booking.$key, bookingRecord);
     }
     return ret;
   }

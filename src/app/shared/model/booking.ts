@@ -18,7 +18,9 @@ export class Booking {
     // tslint:disable-next-line:member-ordering
     static fromJson({$key, from, to, sharableThingKey, userBookingEmail, removed,
                     daylyChargeAmount, daylyChargeCurrency}) {
-        return new Booking($key, from, to, sharableThingKey, userBookingEmail, removed,
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+        return new Booking($key, fromDate, toDate, sharableThingKey, userBookingEmail, removed,
                     daylyChargeAmount, daylyChargeCurrency);
     }
 

@@ -17,6 +17,7 @@ import {UserService} from './providers/user.service';
 import {SharableThingService} from './providers/sharable-thing.service';
 import {MailSenderEmailjsService} from './providers/mail-sender-emailjs.service';
 import {SessionService} from './providers/session.service';
+import {BookingService} from './providers/booking.service';
 
 import { AppComponent } from './app.component';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
@@ -87,7 +88,7 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes),
     SwiperModule
   ],
-  providers: [AuthService, UserService, SharableThingService, MailSenderEmailjsService, SessionService],
+  providers: [AuthService, UserService, SharableThingService, MailSenderEmailjsService, SessionService, BookingService],
   bootstrap: [AppComponent],
   entryComponents: [AddFriendEmailComponent]
 })

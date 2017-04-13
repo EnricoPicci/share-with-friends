@@ -58,7 +58,7 @@ describe('BookingService', () => {
     const friendEmailObj = {email: friendEmail, notified: false};
     // booking data
     const fromDate = new Date(2017, 2, 2);
-    const toDate = new Date(2017, 2, 2);
+    const toDate = new Date(2017, 2, 4);
     createUserAndLogin(authService);
     userService.currentUser$.filter(user => user !== null).first().subscribe();
     sleep(4500).then(() => {
@@ -106,7 +106,12 @@ describe('BookingService', () => {
                           throw new Error(errMsg);
                         }
                         const theBookingRetrieved = theBookingForSharableThing[0];
-                        console.log('READ BOOKING TEST PASSED');
+                        if (!theBookingRetrieved.from || !theBookingRetrieved.to) {
+                          const errMsg = 'the booking does not have from or to dates set';
+                          console.log(errMsg, theBookingsReadForSharableThingKey, theBookingRetrieved);
+                          throw new Error(errMsg);
+                        }
+                        console.log('READ BOOKING TEST PASSED', theBookingRetrieved);
                         console.log('(ADD BOOKING) ... and remove the booking created ...');
                         bookingService.removeBooking(theBookingRetrieved).then(() => {
                           // first() operator is added just to ensure that the Observable returned by loadBookingsFor... methods

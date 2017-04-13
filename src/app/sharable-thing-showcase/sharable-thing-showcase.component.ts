@@ -40,18 +40,14 @@ export class SharableThingShowcaseComponent implements OnInit, OnDestroy {
     // if there is a sharableThingKey in the session it means that the Login or Signup components have filled it
     // and therefore we are after the login
     if (this.session.sharableThingKey) {
-
-
       // check that the sharableThing is one which belongs to the list of things the current user has been granted
-
-
       this.sharableThingSubscription = this.sharableThingService.loadSharableThing(this.session.sharableThingKey).subscribe(
         sharableThing => {
           this.sharableThing = sharableThing;
           console.log('sharableThing to showcase', this.sharableThing);
         }
       );
-    } else {  // there is no sharableThingKey in the session - it means that we have not yet logged in (either with Login or 
+    } else {  // there is no sharableThingKey in the session - it means that we have not yet logged in (either with Login or
               // Signup component)
       this.route.queryParams.subscribe(
         queryParams => {

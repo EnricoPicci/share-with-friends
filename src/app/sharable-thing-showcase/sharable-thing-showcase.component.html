@@ -9,28 +9,40 @@
     {{sharableThing?.description}}
   </md-grid-tile>
 
-  <!--md-grid-tile colspan="4" rowspan="4">
-    {{sharableThing?.description}}
-    <swiper [config]="config" #usefulSwiper *ngIf="sharableThing">
+  <md-grid-tile colspan="4" rowspan="8">
+    <swiper [config]="config" #usefulSwiper *ngIf="sharableThing" style="height: 300px; width: 400px;">
         <div class="swiper-wrapper">
-            <img class="swiper-slide" *ngFor="let image of sharableThing.getImageUrls()" [src]="image" height="70px" width="70px">
+            <img class="swiper-slide" *ngFor="let image of sharableThing.getImageUrls()" [src]="image" height="200px" width="200px">
         </div>
         <div class="swiper-pagination"></div>
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
     </swiper>
-  </md-grid-tile-->
+  </md-grid-tile>
 
-  <md-grid-tile colspan="1" rowspan="4" *ngFor="let imageUrl of sharableThing?.getImageUrls()">
+  <md-grid-tile colspan="4" rowspan="8">
+    <swiper [config]="config" #usefulSwiper *ngIf="sharableThing" style="height: 300px; width: 1200px;">
+        <div class="swiper-wrapper">
+          <p class="swiper-slide" *ngFor="let image of sharableThing.getImageUrls()" > 
+              {{image}}
+          </p>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </swiper>
+  </md-grid-tile>
+
+  <!--md-grid-tile colspan="1" rowspan="4" *ngFor="let imageUrl of sharableThing?.getImageUrls()">
     <img [src]="imageUrl" height="200px" width="200px">
   </md-grid-tile>
 
 </md-grid-list>
 
 
-    <!--swiper [config]="config" #usefulSwiper *ngIf="sharableThing">
+    <swiper [config]="config" #usefulSwiper *ngIf="sharableThing" style="height: 300px; width: 400px;">
         <div class="swiper-wrapper">
-            <img class="swiper-slide" *ngFor="let image of sharableThing.getImageUrls()" [src]="image" height="70px" width="70px">
+            <img class="swiper-slide" *ngFor="let image of sharableThing.getImageUrls()" [src]="image" height="200px" width="200px">
         </div>
         <div class="swiper-pagination"></div>
         <div class="swiper-button-next"></div>

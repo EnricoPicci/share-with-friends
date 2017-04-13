@@ -22,14 +22,19 @@ export class UserService {
   private createUser(uid: string, name: string, email: string) {
     const dbKey = this.getDbKey(email);
     const user = new User(uid, name, email, dbKey);
+    // // if the uid is null then we remove the property to avoid a Firebase error
+    // if (!uid) {
+    //   delete user.authUid;
+    // }
     return user;
   }
-  private createAndSaveUser(uid: string, name: string, email: string) {
-    this.saveUser(this.createUser(uid, name, email));
-  }
+  // private createAndSaveUser(uid: string, name: string, email: string) {
+  //   this.saveUser(this.createUser(uid, name, email));
+  // }
 
   saveUser(user: User) {
     const dbKey = this.getFirebaseUserKey(user);
+    user.dbKey = dbKey;
     return this.af.database.object(dbKey).update(user);
   }
 
@@ -45,7 +50,7 @@ export class UserService {
       const createUserIfNeededSubscription = this.af.database.object(this.getFirebaseRef() + userDbKey)
                                                               .map(User.fromJson).subscribe(
         user => {
-          if (!user.hasUserAlreadySignedUp()) {
+          if (!this.hasUserAlreadySignedUp(user)) {
             // this.createAndSaveUser(authState.uid, authState.auth.displayName, authState.auth.email);
             user.authUid = authState.uid;
             user.name = authState.auth.displayName;
@@ -57,11 +62,14 @@ export class UserService {
       );
       ret = this.af.database.object(this.getFirebaseRef() + userDbKey)
                 .map(jsonObj => {
-                  // console.log('user json', jsonObj);
                   return User.fromJson(jsonObj);
                 });
     }
     return ret;
+  }
+  private hasUserAlreadySignedUp(user: User) {
+      // return user.authUid && user.authUid !== this.getDefaultUid();
+      return user.hasUserAlreadySignedUp();
   }
 
   getUser(userEmail: string) {
@@ -88,7 +96,8 @@ export class UserService {
         user => {
           let thisUser = user;
           if (!user.email) {
-            thisUser = this.createUser('uid', 'name', friendEmail);
+            // thisUser = this.createUser(this.getDefaultUid(), 'name', friendEmail);
+            thisUser = this.createUser(null, 'name', friendEmail);
           }
           if (thisUser.thingsOfferedToMeKeys.indexOf(sharableThingKey) < 0) {
             thisUser.thingsOfferedToMeKeys.push(sharableThingKey);
@@ -97,6 +106,12 @@ export class UserService {
         }
       );
   }
+  // // returns the UID which is used when a user is created before he actually signs up
+  // // this is the case when somebody adds a friend to a sharableThing using frined's email
+  // // but the friend has not yet signup
+  // private getDefaultUid() {
+  //     return 'uid';
+  // }
   removeSharableThingKeyFromUsers(userEmails: Array<string>, sharableThingKey: string) {
     for (let i = 0; i < userEmails.length; i++) {
       const userMail = userEmails[i];
@@ -135,7 +150,8 @@ export class UserService {
     return email.replace(/\./g, '-dot-').replace('@', '-at-');
   }
   private getFirebaseUserKey(user: User) {
-    return this.getFirebaseRef() + user.dbKey;
+    // return this.getFirebaseRef() + user.dbKey;
+    return this.getFirebaseUserKeyFromEmail(user.email);
   }
   private getFirebaseUserKeyFromEmail(userEmail: string) {
     return this.getFirebaseRef() + this.getDbKey(userEmail);

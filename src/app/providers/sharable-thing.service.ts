@@ -11,6 +11,7 @@ import {User} from '../shared/model/user';
 import {UserService} from './user.service';
 import {MailSenderEmailjsService} from './mail-sender-emailjs.service';
 import {Friend} from '../shared/model/friend';
+import { BookingService } from './booking.service';
 
 const SHARABLETHINGS = '/sharablethings/';
 
@@ -22,6 +23,7 @@ export class SharableThingService {
 
   constructor(private af: AngularFire,
               @Inject(FirebaseApp) private firebaseApp: any,
+              private bookingService: BookingService,
               private userService: UserService,
               private mailSenderService: MailSenderEmailjsService) {}
 
@@ -38,24 +40,24 @@ export class SharableThingService {
         .map(items => items.filter(item => item.name))
         .map(SharableThing.fromJsonArray)
         .mergeMap(sharableThings => this.retrieveImageUrlsForAll(sharableThings));
-        // .map(sharableThings => {
-        //   sharableThings.map(sharableThing => this.retrieveImageUrls(sharableThing));
-        //   return sharableThings;
-        // });
   }
   loadActiveSharableThingsForOwner(email: string) {
     return this.loadSharableThingsForOwner(email)
                 .map(sharableThings => sharableThings.filter(thing => !thing.removed));
   }
-  // allSharableThingKeysForOwner(user: User) {
-  //   return this.http.get(firebaseConfig.databaseURL + '/' + environment.db + SHARABLETHINGS + '.json?shallow=true')
-  //                   .map(response => response.json());
-  // }
   loadSharableThing(key: string) {
     return this.af.database.object(this.getFirebaseObjRef(key))
             .map(SharableThing.fromJson)
             .map(sharableThing => {
               this.retrieveImageUrls(sharableThing);
+              return sharableThing;
+            })
+            .switchMap(sharableThing => this.bookingService.loadBookingsForSharableThingKey(sharableThing.$key)
+                                                        .map(bookings => {
+                                                            return {sharableThing, bookings};
+                                                          }))
+            .map(({sharableThing, bookings}) => {
+              sharableThing.getCalendarBook().bookings = bookings;
               return sharableThing;
             });
   }
@@ -68,24 +70,39 @@ export class SharableThingService {
     let ret: firebase.Thenable<any>;
     const listObservable =  this.af.database.list(this.getFirebaseRef());
     if (!sharableThing.$key) {
-      delete sharableThing.$key;
-      ret = listObservable.push(sharableThing)
+      ret = this.saveNewSharableThing(sharableThing, listObservable);
+    } else {
+      ret = this.updateSharableThing(sharableThing, listObservable);
+    }
+    return ret;
+  }
+  private saveNewSharableThing(sharableThing: SharableThing, listObservable: FirebaseListObservable<any>) {
+    delete sharableThing.$key;
+    const ret = listObservable.push(sharableThing)
               .then((item) => {
                 sharableThing.$key = item.key;
                 this.updateThingsOfferedToFriends(sharableThing);
               })
               .catch(err => console.error('error in saveSharableThing', err));
-    } else {
-      const theKey = sharableThing.$key;
-      delete sharableThing.$key;
-      ret = listObservable.update(theKey, sharableThing)
-                .then(() => {
-                  listObservable.remove(theKey + '/temporary');
-                  sharableThing.$key = theKey;
-                  this.updateThingsOfferedToFriends(sharableThing);
-                })
-                .catch(err => console.log('err in saveSharableThing', err));
-    }
+    return ret;
+  }
+  private updateSharableThing(sharableThing: SharableThing, listObservable: FirebaseListObservable<any>) {
+    const theKey = sharableThing.$key;
+    const theBookings = sharableThing.getCalendarBook().bookings;
+    delete sharableThing.$key;
+    // the bookings are removed from the CalendarBook before saving the sharableThing since the bookings
+    // are saved in a different collection dedicated to Bookings. This means that each booking need to be
+    // saved autonomously independent from the saving of the sharableThing
+    delete sharableThing.getCalendarBook().bookings;
+    const ret = listObservable.update(theKey, sharableThing)
+              .then(() => {
+                listObservable.remove(theKey + '/temporary');
+                sharableThing.$key = theKey;
+                // after saving the bookings are reset to their original value in the sharableThing
+                sharableThing.getCalendarBook().bookings = theBookings;
+                this.updateThingsOfferedToFriends(sharableThing);
+              })
+              .catch(err => console.log('err in saveSharableThing', err));
     return ret;
   }
   private updateThingsOfferedToFriends(sharableThing: SharableThing) {
