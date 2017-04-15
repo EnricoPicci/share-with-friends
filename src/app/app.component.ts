@@ -10,7 +10,7 @@ import {User} from './shared/model/user';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit {
   currentUser: User;
 
   // before leaving the app the logout is performed
@@ -31,25 +31,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.currentUser = user;
       }
     );
-    // this.route.queryParams.subscribe(
-    //   queryParams => {
-    //     const userMail = queryParams['user'];
-    //     const sharableThingKey = queryParams['sharableThingkey'];
-    //     console.log('my initial params', queryParams);
-    //     if (userMail && userMail !== '') {
-    //       this.userService.getUser(userMail).subscribe(user => {
-    //         console.log('user retrieved', user);
-    //         if (!user.hasUserAlreadySignedUp()) {
-    //           this.router.navigate(['signup'], {skipLocationChange: true});
-    //         } else {
-    //           this.router.navigate(['login'], {skipLocationChange: true});
-    //         }
-    //       });
-    //     } else {
-    //       // this.router.navigate(['login'], {skipLocationChange: true});
-    //     }
-    //   }
-    // );
   }
 
   logout() {
@@ -57,7 +38,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.router.navigate(['']);
   }
 
-  ngOnDestroy() {
+  goToSharableThingsList(sidenav) {
+    this.router.navigate(['sharableThingsList']);
+    sidenav.toggle();
+  }
+  goToSharableThingsOfferedList(sidenav) {
+    this.router.navigate(['shared-with-me']);
+    sidenav.toggle();
   }
 
 }

@@ -55,7 +55,8 @@ describe('SharableThingService', () => {
     const monetaryAmountAmount = 100;
     const theSecondFriendEmail = 'asecondfriend@my.com';
     let theUser: User;
-    const theSharableThingOwner = 'fakeowner@my.com';
+    // const theSharableThingOwner = 'fakeowner@my.com';
+    const theSharableThingOwner = new User(null, null, 'fakeowner@my.com');
     createUserAndLogin(authService);
     userService.currentUser$.filter(user => user !== null).first().subscribe(
         user => {
@@ -66,7 +67,7 @@ describe('SharableThingService', () => {
       // add a sharable thing for some friends
       console.log('after some time .... a sharable thing for for some friends is added');
       const sharableThing1 = new SharableThing(null, name, description, [],
-                                    theSharableThingOwner, [{email: theUser.email, notified: false},
+                                    theSharableThingOwner.email, [{email: theUser.email, notified: false},
                                                             {email: theSecondFriendEmail, notified: false}],
                                     false, monetaryAmountAmount);
       sharableThingService.saveSharableThing(sharableThing1).then(() => {

@@ -9,21 +9,10 @@ import {AuthInfo} from '../shared/model/auth-info';
 @Injectable()
 export class AuthService {
   private authState: FirebaseAuthState;
-  authInfo$: FirebaseObjectObservable<any>;
   authState$: AngularFireAuth;
 
   constructor(private af: AngularFire) {
     this.authState$ = this.af.auth;
-    // this.af.auth.map(auth => {
-    //   const authInfo = new AuthInfo();
-    //   if (auth) {
-    //     authInfo.$uid = auth.uid;
-    //     authInfo.authenticated = true;
-    //   } else {
-    //     authInfo.authenticated = false;
-    //   }
-    //   return authInfo;
-    // });
     this.af.auth.subscribe(val => this.authState = val);
   }
 

@@ -74,10 +74,7 @@ export class SignupFormComponent implements OnInit {
     }
     this.authService.signUp(formValue.email, formValue.password, formValue.nickname)
                     .then(() => {
-                      let path = 'sharableThingsList';
-                      if (this.session.sharableThingKey) {
-                        path = 'sharableThingShowcase';
-                      }
+                      const path = this.session.path || 'sharableThingsList';
                       console.log('Passing from here', path);
                       this.router.navigate([path], {skipLocationChange: true});
                     })
@@ -88,7 +85,6 @@ export class SignupFormComponent implements OnInit {
   }
 
   onValueChanged(data?: any) {
-    console.log('form ', this.form);
     if (!this.form) { return; }
     const form = this.form;
     // tslint:disable-next-line:forin

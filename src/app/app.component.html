@@ -1,12 +1,14 @@
 <md-sidenav-container>
-  <md-sidenav #sidenav mode="side" opened="false" (mouseleave)="sidenav.opened = false">
-    <md-icon class="toolbar-clickable-icon" (click)="sidenav.toggle()">cancel</md-icon>
+  <md-sidenav #sidenav mode="side" opened="false" (mouseleave)="sidenav.opened = false" style="width: 150px">
+    <button md-raised-button class="full-width" (click)="goToSharableThingsList(sidenav)">Share</button>
+    <button md-raised-button class="full-width" (click)="goToSharableThingsOfferedList(sidenav)">Book</button>
   </md-sidenav>
   <md-toolbar color="primary">
     <md-icon *ngIf="currentUser" class="toolbar-clickable-icon" (click)="sidenav.toggle()">menu</md-icon>
     <span>Share with your friends</span>
     <span class="fill-remaining-space"></span>
-
+    
+    <span *ngIf="currentUser">{{currentUser.name}}</span>
     <md-icon *ngIf="currentUser" class="toolbar-clickable-icon" (click)="logout()">close</md-icon>
   </md-toolbar>
 

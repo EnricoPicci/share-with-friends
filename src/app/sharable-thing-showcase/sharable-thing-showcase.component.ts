@@ -18,6 +18,9 @@ export class SharableThingShowcaseComponent implements OnInit, OnDestroy {
   sharableThing: SharableThing;
   sharableThingSubscription: Subscription;
 
+  imageUrls: Array<string>;
+  owner: User;
+
   config: Object = {
         pagination: '.swiper-pagination',
         paginationClickable: true,
@@ -37,39 +40,20 @@ export class SharableThingShowcaseComponent implements OnInit, OnDestroy {
               ) { }
 
   ngOnInit() {
-    // if there is a sharableThingKey in the session it means that the Login or Signup components have filled it
-    // and therefore we are after the login
+    // if there is a sharableThingKey in the session it means that I need to load a specific sharableThing
     if (this.session.sharableThingKey) {
-      // check that the sharableThing is one which belongs to the list of things the current user has been granted
-      this.sharableThingSubscription = this.sharableThingService.loadSharableThing(this.session.sharableThingKey).subscribe(
-        sharableThing => {
+      this.sharableThingSubscription = this.sharableThingService.loadSharableThing(this.session.sharableThingKey)
+        .switchMap(sharableThing => this.userService.getUser(sharableThing.ownerEmail)
+                                                      .map(owner => {return {sharableThing, owner}; }))
+        .subscribe(({sharableThing, owner}) => {
           this.sharableThing = sharableThing;
+          this.sharableThingService.retrieveImageUrls(sharableThing).then(() => {
+            this.imageUrls = sharableThing.getImageUrls();
+          });
           console.log('sharableThing to showcase', this.sharableThing);
-        }
-      );
-    } else {  // there is no sharableThingKey in the session - it means that we have not yet logged in (either with Login or
-              // Signup component)
-      this.route.queryParams.subscribe(
-        queryParams => {
-          const userMail = queryParams['user'];
-          const sharableThingKey = queryParams['sharableThingkey'];
-          console.log('my initial params', queryParams);
-          if (userMail && userMail !== '') {
-            this.session.userMail = userMail;
-            this.session.sharableThingKey = sharableThingKey;
-            this.userService.getUser(userMail).subscribe(user => {
-              console.log('user retrieved', user);
-              if (user.hasUserAlreadySignedUp()) {
-                this.router.navigate(['login'], {skipLocationChange: true});
-              } else {
-                this.router.navigate(['signup'], {skipLocationChange: true});
-              }
-            });
-          } else {
-            this.router.navigate(['login'], {skipLocationChange: true});
-          }
-        }
-      );
+          this.owner = owner;
+          console.log('OWNER of sharableThing to showcase', this.owner);
+        });
     }
   }
   ngOnDestroy() {

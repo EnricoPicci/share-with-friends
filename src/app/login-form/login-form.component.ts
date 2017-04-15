@@ -57,15 +57,14 @@ export class LoginFormComponent implements OnInit {
   }
 
   onSubmit(formData) {
+    console.log('Submit of Login', this.session.path);
     const formValue = this.form.value;
     this.authService.login(formValue.email, formValue.password)
                     .then(() => {
-                      let path = 'sharableThingsList';
-                      if (this.session.sharableThingKey) {
-                        path = 'sharableThingShowcase';
-                      }
+                      const path = this.session.path || 'sharableThingsList';
                       console.log('Passing from here', path);
-                      this.router.navigate([path], {skipLocationChange: true});
+                      // this.router.navigate([path], {skipLocationChange: true});
+                      this.router.navigate([path]);
                     })
                     .catch(err => {
                       console.log('error at login', err);

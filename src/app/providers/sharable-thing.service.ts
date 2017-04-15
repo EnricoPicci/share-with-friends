@@ -27,11 +27,11 @@ export class SharableThingService {
               private userService: UserService,
               private mailSenderService: MailSenderEmailjsService) {}
 
-  loadSharableThingsForOwner(email: string) {
+  loadSharableThingsForOwner(user: User) {
     return this.af.database.list(this.getFirebaseRef(), {
           query: {
             orderByChild: 'ownerEmail',
-            equalTo: email
+            equalTo: user.email
           }
         })
         // this filter is to avoid passing empty objects which may be present in the list, since
@@ -41,17 +41,24 @@ export class SharableThingService {
         .map(SharableThing.fromJsonArray)
         .mergeMap(sharableThings => this.retrieveImageUrlsForAll(sharableThings));
   }
-  loadActiveSharableThingsForOwner(email: string) {
-    return this.loadSharableThingsForOwner(email)
+  loadActiveSharableThingsForOwner(user: User) {
+    return this.loadSharableThingsForOwner(user)
                 .map(sharableThings => sharableThings.filter(thing => !thing.removed));
+  }
+  loadActiveSharableThingsForFriend(user: User) {
+    return this.af.database.list(this.getFirebaseRef())
+        // this filter is to avoid passing empty objects which may be present in the list, since
+        // the 'getUniqueKeyForSharableThing()' method can actually create empty objects which are never
+        // substituted by real sharableThings
+        .map(items => items.filter(item => item.name))
+        .map(items => items.filter(item => !item.removed))
+        .map(SharableThing.fromJsonArray)
+        .map(things => things.filter(thing => thing.getFriendEmailStrings().indexOf(user.email) !== -1))
+        .mergeMap(sharableThings => this.retrieveImageUrlsForAll(sharableThings));
   }
   loadSharableThing(key: string) {
     return this.af.database.object(this.getFirebaseObjRef(key))
             .map(SharableThing.fromJson)
-            .map(sharableThing => {
-              this.retrieveImageUrls(sharableThing);
-              return sharableThing;
-            })
             .switchMap(sharableThing => this.bookingService.loadBookingsForSharableThingKey(sharableThing.$key)
                                                         .map(bookings => {
                                                             return {sharableThing, bookings};
@@ -208,16 +215,11 @@ export class SharableThingService {
     }
   }
   removeImage(sharableThing: SharableThing, imageUrl: string) {
-    // const imageUrls = sharableThing.getImageUrls();
-    // const imageFileName = _.findKey(imageUrls, imageUrl);
     const imageFileName = sharableThing.getImageFileNameForUrl(imageUrl);
     const imageFileNames = sharableThing.images;
     const imageFileNameIndex = imageFileNames.indexOf(imageFileName);
     sharableThing.images.splice(imageFileNameIndex, 1);
-    // delete imageUrls[imageFileName];
-    // this.af.database.object(this.getFirebaseObjRef(sharableThing.$key)).update(sharableThing)
     this.saveSharableThing(sharableThing);
-      // .then(() => this.getStorageFileRef(imageFileName).delete());
   }
   private getStorageFileRef(fileName: string) {
     const storage = firebase.storage();
@@ -227,7 +229,6 @@ export class SharableThingService {
   removeSharableThing(sharableThing: SharableThing) {
     this.af.database.list(this.getFirebaseRef()).update(sharableThing.$key, {'removed': true, 'images': []})
         .then(() => this.removeAllImagesFromStorage(sharableThing));
-    // this.af.database.list(this.getFirebaseRef()).update(sharableThing.$key, {'removed': true});
     const userEmails = this.getUserEmails(sharableThing.getFriendEmails());
     this.userService.removeSharableThingKeyFromUsers(userEmails, sharableThing.$key);
   }

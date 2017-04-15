@@ -50,6 +50,9 @@ export class SharableThing {
     getFriendEmails() {
         return this.friendEmails;
     }
+    getFriendEmailStrings() {
+        return this.getMailArray(this.friendEmails);
+    }
     addFriendEmail(email: string, notified: boolean = false) {
         const indexOfEmail = this.getMailArray(this.friendEmails).indexOf(email);
         // if index is -1 then the email has not been found in the current emails and therefore it is a new friendEmail

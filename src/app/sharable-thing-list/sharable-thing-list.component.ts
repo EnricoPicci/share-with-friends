@@ -30,7 +30,7 @@ export class SharableThingListComponent implements OnInit, OnDestroy {
 
   getActiveSharableThings() {
     return this.userService.currentUser$
-                .switchMap(user => this.sharableThingService.loadActiveSharableThingsForOwner(user.email))
+                .switchMap(user => this.sharableThingService.loadActiveSharableThingsForOwner(user))
                 .do(things => console.log('the things', things));
   }
 
@@ -40,10 +40,10 @@ export class SharableThingListComponent implements OnInit, OnDestroy {
     if (sharableThing) {
       key = sharableThing.$key;
     }
-    // this.router.navigate(['sharableThing'], {queryParams: {sharableThingkey: key}});
-    this.router.navigate(['sharableThing'],
-                                  {skipLocationChange: true,
-                                  queryParams: {sharableThingkey: key}});
+    this.router.navigate(['sharableThing'], {queryParams: {sharableThingkey: key}});
+    // this.router.navigate(['sharableThing'],
+    //                               {skipLocationChange: true,
+    //                               queryParams: {sharableThingkey: key}});
   }
 
   removeSharableThing(sharableThing: SharableThing) {

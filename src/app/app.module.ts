@@ -13,6 +13,7 @@ import 'hammerjs';
 import { SwiperModule } from 'angular2-useful-swiper';
 
 import {AuthService} from './providers/auth.service';
+import {AuthGuard} from './providers/auth-guard.service';
 import {UserService} from './providers/user.service';
 import {SharableThingService} from './providers/sharable-thing.service';
 import {MailSenderEmailjsService} from './providers/mail-sender-emailjs.service';
@@ -29,21 +30,12 @@ import { SharableThingComponent } from './sharable-thing/sharable-thing.componen
 import {AddFriendEmailComponent} from './sharable-thing/add-friend-email-dialog.component';
 import { FriendFormComponent } from './friend-form/friend-form.component';
 import { SharableThingShowcaseComponent } from './sharable-thing-showcase/sharable-thing-showcase.component';
+import { SharableThingsOfferedListComponent } from './sharable-things-offered-list/sharable-things-offered-list.component';
+
+import {SharableThingsOfferedListViewcontroller} from './view-controllers/sharable-things-offered-list.viewcontroller';
 
 const appRoutes: Routes = [
-    {
-      path: 'sharableThingsList',
-      component: SharableThingListComponent
-    },
-    {
-      path: 'sharableThing',
-      component: SharableThingComponent
-    },
-    {
-      path: 'sharableThingShowcase',
-      component: SharableThingShowcaseComponent
-    },
-    { path: '', component: HomeComponent,
+  { path: 'auth', component: HomeComponent,
       children: [
           {
             path: 'signup',
@@ -59,10 +51,32 @@ const appRoutes: Routes = [
           }
         ]
     },
-    // { path: '',
-    //     redirectTo: '/login',
-    //     pathMatch: 'full'
-    // },
+    { path: '',
+      canActivate: [AuthGuard],
+      children: [
+          {
+            path: 'sharableThingsList',
+            component: SharableThingListComponent
+          },
+          {
+            path: 'sharableThing',
+            component: SharableThingComponent
+          },
+          {
+            path: 'sharableThingShowcase',
+            component: SharableThingShowcaseComponent
+          },
+          {
+            path: 'shared-with-me',
+            component: SharableThingsOfferedListComponent
+          },
+          {
+            path: '',
+            redirectTo: '/auth',
+            pathMatch: 'full'
+          }
+        ]
+    },
     { path: '**', component: PageNotFoundComponent }
 ];
 
@@ -77,7 +91,8 @@ const appRoutes: Routes = [
     SharableThingComponent,
     AddFriendEmailComponent,
     FriendFormComponent,
-    SharableThingShowcaseComponent
+    SharableThingShowcaseComponent,
+    SharableThingsOfferedListComponent
   ],
   imports: [
     BrowserModule,
@@ -88,7 +103,14 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes),
     SwiperModule
   ],
-  providers: [AuthService, UserService, SharableThingService, MailSenderEmailjsService, SessionService, BookingService],
+  providers: [AuthService,
+              AuthGuard,
+              UserService,
+              SharableThingService,
+              MailSenderEmailjsService,
+              SessionService,
+              BookingService,
+              SharableThingsOfferedListViewcontroller],
   bootstrap: [AppComponent],
   entryComponents: [AddFriendEmailComponent]
 })

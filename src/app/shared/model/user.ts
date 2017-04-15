@@ -49,7 +49,7 @@ export class User {
                                                     .length === 0;
     }
     getFriend(email: string) {
-        let ret = null;
+        let ret: Friend = null;
         const friendArray = this.friends.filter(friendIterated => friendIterated.email === email);
         if (friendArray.length > 0) {
             ret = friendArray[0];

@@ -69,13 +69,15 @@ export class SharableThingComponent implements OnInit, OnDestroy {
               this.sharableThing.ownerEmail = this.currentUser.email;
               this.sharableThingService.getUniqueKeyForSharableThing(this.sharableThing);
             } else {
-              this.sharableThingSubscription = this.sharableThingService.loadSharableThing(queryParams['sharableThingkey']).subscribe(
-                sharableThing => {
-                  this.sharableThing = sharableThing;
-                  this.form.controls['name'].setValue(sharableThing.name);
-                  this.form.controls['description'].setValue(sharableThing.description);
-                }
-              );
+              this.sharableThingSubscription = this.sharableThingService.loadSharableThing(queryParams['sharableThingkey'])
+                .subscribe(sharableThing => {
+                  this.sharableThingService.retrieveImageUrls(sharableThing)
+                        .then(() => {
+                          this.sharableThing = sharableThing;
+                          this.form.controls['name'].setValue(sharableThing.name);
+                          this.form.controls['description'].setValue(sharableThing.description);
+                        });
+                });
             }
           }
         );
@@ -157,6 +159,11 @@ export class SharableThingComponent implements OnInit, OnDestroy {
 
   removeImage(imageUrl) {
     this.sharableThingService.removeImage(this.sharableThing, imageUrl);
+  }
+
+  getFriendNickname(friendEmail: string) {
+    const friend = this.currentUser.getFriend(friendEmail);
+    return friend.nickName;
   }
 
 }
