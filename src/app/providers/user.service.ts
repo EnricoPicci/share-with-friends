@@ -87,7 +87,7 @@ export class UserService {
         user => {
           let thisUser = user;
           if (!user.email) {
-            thisUser = this.createUser(null, 'name', friendEmail);
+            thisUser = this.createUser(null, null, friendEmail);
           }
           if (thisUser.thingsOfferedToMeKeys.indexOf(sharableThingKey) < 0) {
             thisUser.thingsOfferedToMeKeys.push(sharableThingKey);

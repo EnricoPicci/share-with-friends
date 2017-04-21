@@ -68,6 +68,11 @@ export class SharableThingService {
               return sharableThing;
             });
   }
+  loadSharableThingAndOwner(key: string) {
+    return this.loadSharableThing(key)
+        .switchMap(sharableThing => this.userService.getUser(sharableThing.ownerEmail)
+                                                      .map(owner => {return {sharableThing, owner}; }));
+  }
 
   saveSharableThing(sharableThing: SharableThing) {
     // imageUrls need to be reset because they can not be saved in firebase given the format of the keys (which is the
@@ -239,6 +244,7 @@ export class SharableThingService {
     this.af.database.list(this.getFirebaseRef()).update(sharableThing.$key, {'removed': true})
       .then(
           () => {
+              this.removeAllImagesFromStorage(sharableThing);
               subject.next(null);
               subject.complete();
 
@@ -253,11 +259,21 @@ export class SharableThingService {
     const removeFromFriendsObs = this.userService.removeSharableThingKeyFromUsersObs(userEmails, sharableThing.$key);
     return Observable.merge(removeObs, removeFromFriendsObs);
   }
+  // delete actually deletes the record from the db, while remove just mark it as removed but leave it on the db
+  deleteSharableThing(sharableThing: SharableThing) {
+    // call removeSharableThingObs to perform all cleanup operations before actually removing the record from the db
+    this.removeSharableThingObs(sharableThing).subscribe(val => {
+      this.af.database.list(this.getFirebaseRef()).remove(sharableThing.$key);
+    });
+  }
+
   private getUserEmails(friendEmails: {email: string, notified: boolean}[]) {
     return friendEmails.map(friendEmail => friendEmail.email);
   }
 
   private getFirebaseRef() {
+    const refff = '/' + environment.db + SHARABLETHINGS;
+    console.log('refff', refff);
     return '/' + environment.db + SHARABLETHINGS;
   }
   private getFirebaseObjRef(key: string) {

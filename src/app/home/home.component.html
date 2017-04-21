@@ -6,6 +6,8 @@
         *ngFor="let image of images"
         colspan="1"
         rowspan="1">
-          <img [src]="getImagePath(image)">
+          <!--<img [src]="getImagePath(image)" class="home-image">-->
+          <!--<img [src]="getImagePath(image)" [style.width]="getImageWidth()">-->
+          <img [src]="getImagePath(image)" [attr.width]="getImageWidth()">
     </md-grid-tile>
   </md-grid-list>

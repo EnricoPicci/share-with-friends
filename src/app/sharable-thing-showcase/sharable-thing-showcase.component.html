@@ -8,7 +8,7 @@
     {{sharableThing?.description}}
   </md-grid-tile>
 
-  <md-grid-tile colspan="4" rowspan="8">
+  <!--md-grid-tile colspan="4" rowspan="8">
     <swiper [config]="config" #usefulSwiper *ngIf="imageUrls" style="height: 300px; width: 400px;">
         <div class="swiper-wrapper">
             <img class="swiper-slide" *ngFor="let image of imageUrls" [src]="image" height="200px" width="200px">
@@ -17,6 +17,14 @@
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
     </swiper>
+  </md-grid-tile-->
+  <md-grid-tile colspan="4" rowspan="8">
+    <sharable-thing-showcase-view [imageUrls]="imageUrls" *ngIf="!showCalendar"></sharable-thing-showcase-view>
+    <sharable-thing-showcase-calendar *ngIf="showCalendar"></sharable-thing-showcase-calendar>
+  </md-grid-tile>
+
+  <md-grid-tile colspan="4" rowspan="1">
+    <button md-raised-button class="full-width space-from-bottom" (click)="toggleView()">{{getViewButtonText()}}</button>
   </md-grid-tile>
 
 </md-grid-list>

@@ -15,7 +15,6 @@ export class AuthGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         return this.userService.currentUser$
                     .map(user => {
-                        console.log('Route in the GGGUUUAAAAARRRDDD', route);
                         if (!user) {
                             const whereQueryParametersStarts = state.url.indexOf('?');
                             if (whereQueryParametersStarts === -1) {
@@ -23,7 +22,6 @@ export class AuthGuard implements CanActivate {
                             } else {
                                 this.session.path = state.url.slice(0, whereQueryParametersStarts);
                             }
-                            console.log('path in the GGGUUUAAAAARRRDDD', this.session.path);
                             this.session.sharableThingKey = route.queryParams['sharableThingkey'];
                             this.session.userMail = route.queryParams['user'];
                         }
@@ -36,7 +34,6 @@ export class AuthGuard implements CanActivate {
                         // to share a thing
                         // in this case we want to retrieve the user data from the DB and see if he has already signed up or not
                         // so that we can present either the login page or the signup page
-                        console.log('Logged in the GGGUUUAAAAARRRDDD', logged);
                         let ret: Observable<boolean>;
                         if (!logged) {
                             // if the user is not logged in and there is no email in the url parameters, then we go to the default route
@@ -45,18 +42,45 @@ export class AuthGuard implements CanActivate {
                                 ret = this.getBooleanObservable(logged);
                             } else {
                                 ret = this.userService.getUser(this.session.userMail)
+                                                        // if the user is not logged in and there is an email
+                                                        // in the url parameters, then we go either to the login page or to the
+                                                        // signup page depending on whether the user has already signup to the app
+                                                        // at least once (and therefore there is a User in the DB) on not
                                                         .map(user => {
                                                             let path = '/auth/signup';
                                                             if (user.hasUserAlreadySignedUp()) {
                                                                 path = '/auth/login';
                                                             }
-                                                            console.log('PATH again in the GGGUUUAAAAARRRDDD', path);
                                                             this.router.navigate([path]);
                                                         })
-                                                        .map(val => logged);
+                                                        .map(val => false);
                             }
                         } else {
-                            ret = this.getBooleanObservable(logged);
+                            const firstPagePath = '/sharableThingsList';
+                            console.log('GUUUAAARRRDDD', this.session.path);
+                            if (this.session.path === '/sharableThing') {
+                                this.session.path = '';
+                                ret = this.getBooleanObservable(false);
+                                this.router.navigate([firstPagePath]);
+                            } else {
+                                ret = this.getBooleanObservable(true);
+                            }
+                            // // if the user is logged he goes to the specific page only if there is a sharableThingKe in the
+                            // // url parameters, otherwise goes to the first page of the app
+                            // if (this.session.sharableThingKey) {
+                            //     ret = this.getBooleanObservable(logged);
+                            // } else {
+                            //     // // to avoid an infite loop we need to chack that the path requested is not the firstPagePath
+                            //     // if (this.session.path !== firstPagePath) {
+                            //     //     this.router.navigate([firstPagePath]);
+                            //     //     ret = this.getBooleanObservable(false);
+                            //     // } else {
+                            //     //     ret = this.getBooleanObservable(true);
+                            //     // }
+                            //     console.log('GUUUAAARRRDDD', this.session.path);
+                            //     console.log('GUUUAAARRRDDD', this.session.path !== firstPagePath);
+                            //     ret = this.getBooleanObservable(logged);
+                            // }
                         }
                         return ret;
                     });

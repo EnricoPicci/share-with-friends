@@ -235,10 +235,17 @@ describe('SharableThingService', () => {
                     // this is mandatory - without it we enter an infinite loop since loadSharableThing loads also the bookings
                     // therefore, if the bookingList changes (and it changes when a booking is added) then the loadSharableThing
                     // subscription is executed again, unless it is closed after the firt emission
-                    sharableThingService.loadSharableThing(lastThingOfferedToMeKey).first().subscribe(thingOfferedToMe => {  // 05
+                    sharableThingService.loadSharableThingAndOwner(lastThingOfferedToMeKey).first()
+                    .subscribe(({sharableThing, owner}) => {  // 05
+                        const thingOfferedToMe = sharableThing;
                         const from1 = new Date(2020, 3, 14);
                         const to1 = new Date(2020, 3, 16);
                         const booking1 = thingOfferedToMe.addBooking(from1, to1, theUser.email);
+                        if (owner.email !== theSharableThingOwnerEmail) {
+                            const errMessage = ' the owner of the thing is not the expected one ';
+                            console.log(testName + errMessage, owner, theSharableThingOwnerEmail);
+                            throw new Error(testName + errMessage);
+                        }
                         bookingService.saveBooking(booking1).then(() => {  // 06
                                 // 6) LOGOUT
                             console.log(testName + ' ... then I logout for the second time');
@@ -287,6 +294,7 @@ describe('SharableThingService', () => {
                                                         throw new Error(testName + errorMsg);
                                                     }
                                                     authService.logout();
+                                                    console.log(testName + 'PASSED');
                                                 }); // 12
                                             }); // 11
                                         }); // 10

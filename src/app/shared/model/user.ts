@@ -29,6 +29,9 @@ export class User {
         if (thingsOfferedToMeKeys) {
             this.thingsOfferedToMeKeys = thingsOfferedToMeKeys;
         }
+        if (!this.name) {
+            this.name = '';
+        }
     }
 
     // tslint:disable-next-line:member-ordering

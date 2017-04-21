@@ -5,6 +5,8 @@ export const environment = {
 
   imagePath: '/assets/images/',
 
-  sharableThingShowcasePageUrl: 'http://localhost:4200/sharableThingShowcase?sharableThingkey='
+  defaultCoverImage: '/assets/images/share1.jpeg',
+
+  sharableThingShowcasePageUrl: 'https://sharewithfriends-f0b95.firebaseapp.com/sharableThingShowcase?sharableThingkey='
 
 };

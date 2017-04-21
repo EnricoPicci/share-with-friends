@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import {Subscription} from 'rxjs/Rx';
 
 import {SharableThing} from '../shared/model/sharable-thing';
 import {SharableThingService} from '../providers/sharable-thing.service';
-import {UserService} from '../providers/user.service';
 import {User} from '../shared/model/user';
 import {SessionService} from '../providers/session.service';
 
@@ -21,6 +20,8 @@ export class SharableThingShowcaseComponent implements OnInit, OnDestroy {
   imageUrls: Array<string>;
   owner: User;
 
+  showCalendar = false;
+
   config: Object = {
         pagination: '.swiper-pagination',
         paginationClickable: true,
@@ -33,8 +34,6 @@ export class SharableThingShowcaseComponent implements OnInit, OnDestroy {
 
   constructor(
               private router: Router,
-              private route: ActivatedRoute,
-              private userService: UserService,
               private session: SessionService,
               private sharableThingService: SharableThingService
               ) { }
@@ -42,9 +41,7 @@ export class SharableThingShowcaseComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // if there is a sharableThingKey in the session it means that I need to load a specific sharableThing
     if (this.session.sharableThingKey) {
-      this.sharableThingSubscription = this.sharableThingService.loadSharableThing(this.session.sharableThingKey)
-        .switchMap(sharableThing => this.userService.getUser(sharableThing.ownerEmail)
-                                                      .map(owner => {return {sharableThing, owner}; }))
+      this.sharableThingSubscription = this.sharableThingService.loadSharableThingAndOwner(this.session.sharableThingKey)
         .subscribe(({sharableThing, owner}) => {
           this.sharableThing = sharableThing;
           this.sharableThingService.retrieveImageUrls(sharableThing).then(() => {
@@ -54,12 +51,26 @@ export class SharableThingShowcaseComponent implements OnInit, OnDestroy {
           this.owner = owner;
           console.log('OWNER of sharableThing to showcase', this.owner);
         });
+    } else {
+      this.router.navigate(['shared-with-me']);
     }
   }
   ngOnDestroy() {
+    console.log('Destroy the SHOWCASE view');
     if (this.sharableThingSubscription) {
       this.sharableThingSubscription.unsubscribe();
     }
+  }
+
+  toggleView() {
+    this.showCalendar = !this.showCalendar;
+  }
+  getViewButtonText() {
+    let text = 'Book';
+    if (this.showCalendar) {
+      text = 'View Details';
+    }
+    return text;
   }
 
 }

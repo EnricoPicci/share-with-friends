@@ -8,6 +8,7 @@ import {SharableThing} from '../shared/model/sharable-thing';
 import {SharableThingService} from '../providers/sharable-thing.service';
 import {User} from '../shared/model/user';
 import {UserService} from '../providers/user.service';
+import {SessionService} from '../providers/session.service';
 import {AddFriendEmailComponent} from './add-friend-email-dialog.component';
 import {Friend} from '../shared/model/friend';
 
@@ -37,11 +38,10 @@ export class SharableThingComponent implements OnInit, OnDestroy {
   errorMessage: string;
   form: FormGroup;
 
-  // sharableThing$: Observable<SharableThing>;
   sharableThing: SharableThing;
   currentUser: User;
-  currentUserSubscription: Subscription;
-  sharableThingSubscription: Subscription;
+  currentUserSub: Subscription;
+  sharableThingSub: Subscription;
 
   filesSelected: FileList;
 
@@ -50,6 +50,7 @@ export class SharableThingComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private sharableThingService: SharableThingService,
               private userService: UserService,
+              private session: SessionService,
               public dialog: MdDialog) {
     this.buildForm();
    }
@@ -57,36 +58,42 @@ export class SharableThingComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Make sure that we first get the currentUser and then create (or load) the sharableThing
     // This is important in the case of a new SharableThing - when we create a new SharableThing we want to make sure
-    // we have already the currentUser at hand
-    this.currentUserSubscription = this.userService.currentUser$.subscribe(
-      user => {
+    // we have already the currentUser at hand, as well as in the case of an existing thing since we need to retrieve
+    // the friend nickName from the currentUser
+    this.currentUserSub = this.userService.currentUser$.subscribe(user => {
+      // loading or creating a sharableThing must happen only once, i.e. when the there is no sharableThing
+      // if the sharableThing property has been already filled, then there is no point in subscribing again to load it
+      // or, even worse, creating a new one
+      if (!this.sharableThing) {
         this.currentUser = user;
-        this.route.queryParams.subscribe(
-          queryParams => {
-            console.log('my params', queryParams);
-            if (queryParams['sharableThingkey'] === '' && !this.sharableThing) {
-              this.sharableThing = new SharableThing(null, null, null);
-              this.sharableThing.ownerEmail = this.currentUser.email;
-              this.sharableThingService.getUniqueKeyForSharableThing(this.sharableThing);
-            } else {
-              this.sharableThingSubscription = this.sharableThingService.loadSharableThing(queryParams['sharableThingkey'])
-                .subscribe(sharableThing => {
-                  this.sharableThingService.retrieveImageUrls(sharableThing)
-                        .then(() => {
-                          this.sharableThing = sharableThing;
-                          this.form.controls['name'].setValue(sharableThing.name);
-                          this.form.controls['description'].setValue(sharableThing.description);
-                        });
+        if (this.session.sharableThingKey) {
+        this.sharableThingSub = this.sharableThingService.loadSharableThing(this.session.sharableThingKey).subscribe(sharableThing => {
+          this.sharableThingService.retrieveImageUrls(sharableThing)
+                .then(() => {
+                  this.sharableThing = sharableThing;
+                  this.form.controls['name'].setValue(sharableThing.name);
+                  this.form.controls['description'].setValue(sharableThing.description);
                 });
-            }
-          }
-        );
+          });
+        } else {
+          this.sharableThing = new SharableThing(null, null, null);
+          this.sharableThing.ownerEmail = this.currentUser.email;
+          this.sharableThingService.getUniqueKeyForSharableThing(this.sharableThing);
+        }
       }
-    );
+    });
   }
   ngOnDestroy() {
-    this.currentUserSubscription.unsubscribe();
-    this.sharableThingSubscription.unsubscribe();
+    this.currentUserSub.unsubscribe();
+    if (this.sharableThingSub) {
+      this.sharableThingSub.unsubscribe();
+    }
+    // if the sharableThing does not have a name, then it means that it has not been saved
+    // in this case there is a record on the db holding just the $key of the sharableThing
+    // and this record needs to be deleted
+    if (!this.sharableThing.name) {
+      this.sharableThingService.deleteSharableThing(this.sharableThing);
+    }
   }
 
   buildForm(): void {
@@ -164,6 +171,13 @@ export class SharableThingComponent implements OnInit, OnDestroy {
   getFriendNickname(friendEmail: string) {
     const friend = this.currentUser.getFriend(friendEmail);
     return friend.nickName;
+  }
+
+  getColSpanForImages() {
+    return this.session.breakpoint === 'xs' ? 4 : 2;
+  }
+  getColSpanForFriends() {
+    return this.session.breakpoint === 'xs' ? 2 : 1;
   }
 
 }

@@ -9,6 +9,7 @@ import {firebaseConfig, authConfig} from '../environments/firebase.config';
 
 import { MaterialModule } from '@angular/material';
 import 'hammerjs';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SwiperModule } from 'angular2-useful-swiper';
 
@@ -32,7 +33,10 @@ import { FriendFormComponent } from './friend-form/friend-form.component';
 import { SharableThingShowcaseComponent } from './sharable-thing-showcase/sharable-thing-showcase.component';
 import { SharableThingsOfferedListComponent } from './sharable-things-offered-list/sharable-things-offered-list.component';
 
-import {SharableThingsOfferedListViewcontroller} from './view-controllers/sharable-things-offered-list.viewcontroller';
+import {SharableThingsOfferedListViewcontrollerService} from './view-controllers/sharable-things-offered-list-viewcontroller.service';
+// import { CalendarBookComponent } from './calendar-book/calendar-book.component';
+import { SharableThingShowcaseViewComponent } from './sharable-thing-showcase-view/sharable-thing-showcase-view.component';
+import { SharableThingShowcaseCalendarComponent } from './sharable-thing-showcase-calendar/sharable-thing-showcase-calendar.component';
 
 const appRoutes: Routes = [
   { path: 'auth', component: HomeComponent,
@@ -70,6 +74,10 @@ const appRoutes: Routes = [
             path: 'shared-with-me',
             component: SharableThingsOfferedListComponent
           },
+          // {
+          //   path: 'calendar',
+          //   component: CalendarBookComponent
+          // },
           {
             path: '',
             redirectTo: '/auth',
@@ -92,7 +100,10 @@ const appRoutes: Routes = [
     AddFriendEmailComponent,
     FriendFormComponent,
     SharableThingShowcaseComponent,
-    SharableThingsOfferedListComponent
+    SharableThingsOfferedListComponent,
+    // CalendarBookComponent,
+    SharableThingShowcaseViewComponent,
+    SharableThingShowcaseCalendarComponent
   ],
   imports: [
     BrowserModule,
@@ -101,6 +112,7 @@ const appRoutes: Routes = [
     AngularFireModule.initializeApp(firebaseConfig, authConfig),
     MaterialModule,
     RouterModule.forRoot(appRoutes),
+    FlexLayoutModule,
     SwiperModule
   ],
   providers: [AuthService,
@@ -110,7 +122,7 @@ const appRoutes: Routes = [
               MailSenderEmailjsService,
               SessionService,
               BookingService,
-              SharableThingsOfferedListViewcontroller],
+              SharableThingsOfferedListViewcontrollerService],
   bootstrap: [AppComponent],
   entryComponents: [AddFriendEmailComponent]
 })

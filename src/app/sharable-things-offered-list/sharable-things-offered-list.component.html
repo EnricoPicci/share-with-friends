@@ -1,20 +1,17 @@
-  <md-card class="section-header">The things offered to you</md-card>
+  <md-card class="section-header">{{viewController.getHeaderText(sharableThings)}}</md-card>
 
-  <md-grid-list cols="3" class="space-from-top">
+  <md-grid-list [cols]="session.getDefaultNumberOfColumns()" class="space-from-top">
 
     <md-grid-tile colspan="1" rowspan="1" *ngIf="!sharableThings">
       <md-progress-spinner mode="indeterminate"></md-progress-spinner>
     </md-grid-tile>
 
-    <md-grid-tile
-        *ngFor="let sharableThing of sharableThings"
-        colspan="1"
-        rowspan="1">
+    <md-grid-tile *ngFor="let sharableThing of sharableThings" colspan="1" rowspan="1">
         <md-card class="sharable-thing-card">
             <md-card-header>
               <md-card-title>{{sharableThing.name}}</md-card-title>
             </md-card-header>
-            <img md-card-image *ngIf="sharableThing.getCoverImageUrl()" [src]="sharableThing.getCoverImageUrl()">
+            <img md-card-image *ngIf="sharableThing.getCoverImageUrl()" [src]="sharableThing.getCoverImageUrl()" height="180px">
             <md-card-content>
               <p>{{sharableThing.description}}</p>
             </md-card-content>

@@ -27,7 +27,7 @@
         <md-grid-tile colspan="1" rowspan="1" *ngIf="!sharableThing">
           <md-progress-spinner mode="indeterminate"></md-progress-spinner>
         </md-grid-tile>
-        <md-grid-tile colspan="2" rowspan="5" *ngFor="let imageUrl of sharableThing?.getImageUrls()">
+        <md-grid-tile [colspan]="getColSpanForImages()" rowspan="5" *ngFor="let imageUrl of sharableThing?.getImageUrls()">
           <md-card>
             <img [src]="imageUrl" height="230px" width="230px">
             <md-card-actions>
@@ -39,7 +39,7 @@
         <md-grid-tile colspan="4" rowspan="1">
           <md-card class="section-header" (click)="addFriend()">The friends</md-card>
         </md-grid-tile>
-        <md-grid-tile colspan="1" rowspan="2" *ngFor="let friendMail of sharableThing?.friendEmails">
+        <md-grid-tile [colspan]="getColSpanForFriends()" rowspan="2" *ngFor="let friendMail of sharableThing?.friendEmails">
           <md-card class="friend-card">
             <md-card-title>{{getFriendNickname(friendMail.email)}}</md-card-title>
             <md-card-subtitle>{{friendMail.email}}</md-card-subtitle>
