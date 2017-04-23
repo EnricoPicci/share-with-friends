@@ -12,6 +12,7 @@ import 'hammerjs';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { SwiperModule } from 'angular2-useful-swiper';
+import { CalendarModule } from 'angular-calendar';
 
 import {AuthService} from './providers/auth.service';
 import {AuthGuard} from './providers/auth-guard.service';
@@ -113,7 +114,8 @@ const appRoutes: Routes = [
     MaterialModule,
     RouterModule.forRoot(appRoutes),
     FlexLayoutModule,
-    SwiperModule
+    SwiperModule,
+    CalendarModule.forRoot()
   ],
   providers: [AuthService,
               AuthGuard,

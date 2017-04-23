@@ -7,7 +7,7 @@ import {User} from './user';
 import {Friend} from './friend';
 import {CalendarBook} from './calendar-book';
 import {CalendarBookJsonInterface} from './calendar-book-json.interface';
-import {Booking} from './booking';
+import {Booking, BookingStatus} from './booking';
 
 export class SharableThing {
     monetaryAmount: MonetaryAmount;
@@ -136,11 +136,11 @@ export class SharableThing {
     addBooking(from: Date, to: Date, userBookingEmail: string) {
         let booking: Booking;
         if (this.calendarBook.isDateIntervalFree(from, to)) {
-            booking = new Booking(null , from, to, this.$key, userBookingEmail, false);
+            booking = new Booking(null , from, to, this.$key, userBookingEmail, BookingStatus.Pending);
             this.calendarBook.addBooking(booking);
         }
         return booking;
-        // const booking = new Booking(null , from, to, this.$key, userBookingEmail, false);
+        // const booking = new Booking(null , from, to, this.$key, userBookingEmail, BookingStatus.Pending);
         // this.calendarBook.addBooking(booking);
         // return booking;
     }

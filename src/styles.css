@@ -27,6 +27,7 @@
   width: 200px;
 }
 
-/*.swiper-container {
-    padding: 30px;
-}*/
+swiper .swiper-container {
+    /*padding: 30px;*/
+    position: inherit;
+}

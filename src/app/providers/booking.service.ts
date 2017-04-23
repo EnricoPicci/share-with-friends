@@ -6,7 +6,7 @@ import {Subject, Observable} from 'rxjs/Rx';
 
 import {environment} from '../../environments/environment';
 import {firebaseConfig} from '../../environments/firebase.config';
-import {Booking} from '../shared/model/booking';
+import {Booking, BookingStatus} from '../shared/model/booking';
 import {BookingRecord} from './booking-record';
 
 const BOOKINGS = '/bookings/';
@@ -40,7 +40,7 @@ export class BookingService {
       monetaryAmount: {amount: booking.monetaryAmount.amount, currency: booking.monetaryAmount.currency},
       sharableThingKey: booking.sharableThingKey,
       userBookingEmail: booking.userBookingEmail,
-      removed: booking.removed
+      status: booking.status
     };
     booking['start'] = booking.from.toISOString();
     // const bookingJson = JSON.stringify(booking);
@@ -60,13 +60,13 @@ export class BookingService {
   }
 
   removeBooking(booking: Booking) {
-    return this.af.database.list(this.getFirebaseRef()).update(booking.$key, {'removed': true});
+    return this.af.database.list(this.getFirebaseRef()).update(booking.$key, {'status': BookingStatus.Removed});
   }
   // implements the logic using the Observable pattern
   // requires client to subscribe in order for the logic to be activated
   removeBookingObs(booking: Booking) {
     const subject = new Subject();
-    this.af.database.list(this.getFirebaseRef()).update(booking.$key, {'removed': true})
+    this.af.database.list(this.getFirebaseRef()).update(booking.$key, {'status': BookingStatus.Removed})
       .then(
           () => {
               subject.next(null);

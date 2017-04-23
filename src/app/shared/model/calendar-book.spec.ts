@@ -2,7 +2,7 @@
 import {parse} from 'date-fns';
 
 import {CalendarBook} from './calendar-book';
-import {Booking} from './booking';
+import {Booking, BookingStatus} from './booking';
 import { MonetaryAmount } from './monetary-amount';
 
 describe('CalendarBook', () => {
@@ -297,7 +297,7 @@ describe('CalendarBook', () => {
     const userBookingEmail = 'booker@b.com';
     const monetaryAmountAmount = 90;
     const monetaryAmount1 = new MonetaryAmount(monetaryAmountAmount);
-    return new Booking(key , from, to, sharableThingKey, userBookingEmail, false, monetaryAmountAmount);
+    return new Booking(key , from, to, sharableThingKey, userBookingEmail, BookingStatus.Pending, monetaryAmountAmount);
   };
   it('add a booking and test tha a date before the booking is free', () => {
     const calendarBook = new CalendarBook();

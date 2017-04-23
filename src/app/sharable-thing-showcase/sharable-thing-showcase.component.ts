@@ -47,9 +47,7 @@ export class SharableThingShowcaseComponent implements OnInit, OnDestroy {
           this.sharableThingService.retrieveImageUrls(sharableThing).then(() => {
             this.imageUrls = sharableThing.getImageUrls();
           });
-          console.log('sharableThing to showcase', this.sharableThing);
           this.owner = owner;
-          console.log('OWNER of sharableThing to showcase', this.owner);
         });
     } else {
       this.router.navigate(['shared-with-me']);

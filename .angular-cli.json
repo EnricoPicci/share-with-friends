@@ -19,8 +19,9 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "",
       "styles": [
-        "styles.css"
-        ,"../node_modules/swiper/dist/css/swiper.min.css"
+        "styles.css",
+        "../node_modules/swiper/dist/css/swiper.min.css",
+        "../node_modules/angular-calendar/dist/css/angular-calendar.css"
       ],
       "scripts": [
         "../node_modules/swiper/dist/js/swiper.min.js"

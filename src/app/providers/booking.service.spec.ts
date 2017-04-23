@@ -75,7 +75,7 @@ describe('BookingService', () => {
             console.log('(ADD BOOKING) ... then I login again ...');
             authService.login(userEmail, userPwd).then(() => {
                 console.log('(ADD BOOKING) ... and create and save a booking ...');
-                const booking = new Booking(null, fromDate, toDate, sharableThing1.$key, bookerEmail, false);
+                const booking = new Booking(null, fromDate, toDate, sharableThing1.$key, bookerEmail);
                 bookingService.saveBooking(booking).then(() => {
                   let theBookingsReadForUserEmail: Booking[];
                   let theBookingsReadForSharableThingKey: Booking[];
@@ -128,7 +128,7 @@ describe('BookingService', () => {
                               () => {
                                 const theBookingForUser1 = theBookingsReadForUserEmail
                                                           .filter(bkng => bkng.$key === booking.$key)
-                                                          .filter(bkng => !bkng.removed);
+                                                          .filter(bkng => !bkng.isRemoved());
                                 if (theBookingForUser1.length !== 0) {
                                   const errMsg = 'there are active bookings retrieved from back end while we expect none';
                                   console.log(errMsg, theBookingsReadForUserEmail, booking);
@@ -136,7 +136,7 @@ describe('BookingService', () => {
                                 }
                                 const theBookingForSharableThing1 = theBookingsReadForSharableThingKey
                                                                     .filter(bkng => bkng.sharableThingKey === booking.sharableThingKey)
-                                                                    .filter(bkng => !bkng.removed);
+                                                                    .filter(bkng => !bkng.isRemoved());
                                 if (theBookingForSharableThing1.length !== 0) {
                                   const errMsg = 'there are active bookings retrieved from back end while we expect none';
                                   console.log(errMsg, theBookingsReadForSharableThingKey, booking);
