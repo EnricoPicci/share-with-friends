@@ -16,31 +16,40 @@ export class SharableThing {
     private calendarBook: CalendarBook;
 
     constructor(
-        public $key: string,
-        public name: string,
-        public description: string,
-        public images?: Array<string>,
-        public ownerEmail?: string,
-        private friendEmails?: Array<{email: string, notified: boolean}>,
-        public removed?: boolean,
-        daylyChargeAmount?: number,
-        daylyChargeCurrency?: string,
-        calendarBookJson?: CalendarBookJsonInterface) {
-            this.monetaryAmount = new MonetaryAmount(daylyChargeAmount, daylyChargeCurrency);
+            public $key: string,
+            public name: string,
+            public description: string,
+            public images?: Array<string>,
+            public ownerEmail?: string,
+            private friendEmails?: Array<{email: string, notified: boolean}>,
+            public removed?: boolean,
+            monetaryAmount?: {amount: number, currency?: string},
+            // daylyChargeAmount?: number,
+            // daylyChargeCurrency?: string,
+            calendarBook?: CalendarBookJsonInterface
+        ) {
+            if (monetaryAmount) {
+                this.monetaryAmount = new MonetaryAmount(
+                                            monetaryAmount.amount,
+                                            monetaryAmount.currency ? monetaryAmount.currency : 'EUR'
+                                        );
+            } else {
+                this.monetaryAmount = new MonetaryAmount(0, 'EUR');
+            }
             if (!this.images) {this.images = []; }
             if (!this.friendEmails) {this.friendEmails = []; }
             if (!this.removed) {this.removed = false; }
-            const calendarBook = new CalendarBook(calendarBookJson);
-            this.setCalendarBook(calendarBook);
+            const theCalendarBook = new CalendarBook(calendarBook);
+            this.setCalendarBook(theCalendarBook);
     }
 
     // tslint:disable-next-line:member-ordering
     static fromJson({$key, name, description, images,
                     ownerEmail, friendEmails, removed,
-                    daylyChargeAmount, daylyChargeCurrency}) {
+                    monetaryAmount, calendarBook}) {
         return new SharableThing($key, name, description, images,
                                 ownerEmail, friendEmails, removed,
-                                daylyChargeAmount, daylyChargeCurrency);
+                                monetaryAmount, calendarBook);
     }
 
     static fromJsonArray(json: any[]): SharableThing[] {

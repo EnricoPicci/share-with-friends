@@ -7,6 +7,7 @@ export class SessionService {
   sharableThingKey: string;
   path: string;
   breakpoint: string;
+  showCalendarInShowcaseView: boolean;
 
   constructor(private media: ObservableMedia) {
     if (this.media.isActive('xs')) {

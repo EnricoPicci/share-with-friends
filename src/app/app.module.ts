@@ -29,7 +29,7 @@ import {LoginFormComponent} from './login-form/login-form.component';
 import { HomeComponent } from './home/home.component';
 import { SharableThingListComponent } from './sharable-thing-list/sharable-thing-list.component';
 import { SharableThingComponent } from './sharable-thing/sharable-thing.component';
-import {AddFriendEmailComponent} from './sharable-thing/add-friend-email-dialog.component';
+import {AddFriendEmailDialogComponent} from './sharable-thing/add-friend-email-dialog.component';
 import { FriendFormComponent } from './friend-form/friend-form.component';
 import { SharableThingShowcaseComponent } from './sharable-thing-showcase/sharable-thing-showcase.component';
 import { SharableThingsOfferedListComponent } from './sharable-things-offered-list/sharable-things-offered-list.component';
@@ -38,6 +38,8 @@ import {SharableThingsOfferedListViewcontrollerService} from './view-controllers
 // import { CalendarBookComponent } from './calendar-book/calendar-book.component';
 import { SharableThingShowcaseViewComponent } from './sharable-thing-showcase-view/sharable-thing-showcase-view.component';
 import { SharableThingShowcaseCalendarComponent } from './sharable-thing-showcase-calendar/sharable-thing-showcase-calendar.component';
+import { CalendarBookViewcontrollerService } from './view-controllers/calendar-book-viewcontroller.service';
+import {CalendarDialogComponent} from './sharable-thing-showcase-calendar/calendar-dialog.component';
 
 const appRoutes: Routes = [
   { path: 'auth', component: HomeComponent,
@@ -98,13 +100,14 @@ const appRoutes: Routes = [
     HomeComponent,
     SharableThingListComponent,
     SharableThingComponent,
-    AddFriendEmailComponent,
+    AddFriendEmailDialogComponent,
     FriendFormComponent,
     SharableThingShowcaseComponent,
     SharableThingsOfferedListComponent,
     // CalendarBookComponent,
     SharableThingShowcaseViewComponent,
-    SharableThingShowcaseCalendarComponent
+    SharableThingShowcaseCalendarComponent,
+    CalendarDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -117,15 +120,21 @@ const appRoutes: Routes = [
     SwiperModule,
     CalendarModule.forRoot()
   ],
-  providers: [AuthService,
-              AuthGuard,
-              UserService,
-              SharableThingService,
-              MailSenderEmailjsService,
-              SessionService,
-              BookingService,
-              SharableThingsOfferedListViewcontrollerService],
+  providers: [
+    AuthService,
+    AuthGuard,
+    UserService,
+    SharableThingService,
+    MailSenderEmailjsService,
+    SessionService,
+    BookingService,
+    SharableThingsOfferedListViewcontrollerService,
+    CalendarBookViewcontrollerService
+    ],
   bootstrap: [AppComponent],
-  entryComponents: [AddFriendEmailComponent]
+  entryComponents: [
+    AddFriendEmailDialogComponent,
+    CalendarDialogComponent
+    ]
 })
 export class AppModule { }

@@ -17,47 +17,32 @@ export class SharableThingsOfferedListComponent implements OnInit, OnDestroy {
   sharableThings: SharableThing[];
 
   sub1: Subscription;
-  // sub2: Subscription;
-  // breakpoint: string;
 
   constructor(private router: Router,
               private viewController: SharableThingsOfferedListViewcontrollerService,
               private session: SessionService,
-              // private media: ObservableMedia
               ) { }
 
   ngOnInit() {
     this.sub1 = this.viewController
                       .getActiveSharableThings()
                       .subscribe(sharableThings => this.sharableThings = sharableThings);
-    // if (this.media.isActive('xs')) {
-    //   this.breakpoint = 'xs';
-    // }
-    // this.sub2 = this.media.asObservable().subscribe(change => {
-    //               this.breakpoint = change.mqAlias;
-    // });
   }
   ngOnDestroy() {
     this.sub1.unsubscribe();
-    // this.sub2.unsubscribe();
   }
 
-  // getNumberOfColumns() {
-  //   let cols = 2;
-  //   if (this.breakpoint === 'xs') {
-  //     cols = 1;
-  //   };
-  //   return cols;
-  // }
-
+  viewSharableThing(sharableThing: SharableThing) {
+    this.session.showCalendarInShowcaseView = false;
+    this.goToSharableThing(sharableThing);
+  }
+  bookSharableThing(sharableThing: SharableThing) {
+    this.session.showCalendarInShowcaseView = true;
+    this.goToSharableThing(sharableThing);
+  }
   goToSharableThing(sharableThing: SharableThing) {
-    console.log('the thiiiiing', sharableThing);
     this.session.sharableThingKey = sharableThing.$key;
     this.router.navigate(['sharableThingShowcase']);
-  }
-
-  bookSharableThing(sharableThing: SharableThing) {
-    //
   }
 
 }

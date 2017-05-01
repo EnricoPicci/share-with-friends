@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Validators, FormGroup, FormBuilder} from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import {Subscription} from 'rxjs/Rx';
@@ -9,8 +9,9 @@ import {SharableThingService} from '../providers/sharable-thing.service';
 import {User} from '../shared/model/user';
 import {UserService} from '../providers/user.service';
 import {SessionService} from '../providers/session.service';
-import {AddFriendEmailComponent} from './add-friend-email-dialog.component';
+import {AddFriendEmailDialogComponent} from './add-friend-email-dialog.component';
 import {Friend} from '../shared/model/friend';
+import {SharableThingShowcaseCalendarComponent} from '../sharable-thing-showcase-calendar/sharable-thing-showcase-calendar.component';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -45,6 +46,8 @@ export class SharableThingComponent implements OnInit, OnDestroy {
 
   filesSelected: FileList;
 
+  @ViewChild(SharableThingShowcaseCalendarComponent) calendarComponent: SharableThingShowcaseCalendarComponent;
+
   constructor(private formBuilder: FormBuilder,
               private router: Router,
               private route: ActivatedRoute,
@@ -73,6 +76,12 @@ export class SharableThingComponent implements OnInit, OnDestroy {
                   this.sharableThing = sharableThing;
                   this.form.controls['name'].setValue(sharableThing.name);
                   this.form.controls['description'].setValue(sharableThing.description);
+                  this.form.controls['price'].setValue(sharableThing.monetaryAmount.amount);
+                  // this.form.controls['blockweekends'].setValue(sharableThing.getCalendarBook().blockWeekends);
+                  // this.form.controls['blockworkweek'].setValue(sharableThing.getCalendarBook().blockWorkweek);
+                  for (const day of this.getBlockableDays()) {
+                    this.form.controls[day.name].setValue(sharableThing.getCalendarBook()[day.blockProperty]);
+                  }
                 });
           });
         } else {
@@ -97,10 +106,17 @@ export class SharableThingComponent implements OnInit, OnDestroy {
   }
 
   buildForm(): void {
-    this.form = this.formBuilder.group({
+    const group = {
                     name: ['', Validators.required],
-                    description: ['', Validators.required]
-                  });
+                    description: ['', Validators.required],
+                    price: [null],
+                    // blockweekends: [''],
+                    // blockworkweek: ['']
+                  };
+    for (const day of this.getBlockableDaysLabels()) {
+      group[day] = [false];
+    }
+    this.form = this.formBuilder.group(group);
     this.form.valueChanges
       .subscribe(data => this.onValueChanged(data));
     this.onValueChanged(); // (re)set validation messages now
@@ -134,25 +150,33 @@ export class SharableThingComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(formData) {
-    console.log('the thing', this.sharableThing);
     this.sharableThing.name = formData.name;
     this.sharableThing.description = formData.description;
-    console.log('sharable thing to be saved', this.sharableThing);
+    this.sharableThing.monetaryAmount.amount = formData.price;
+    // this.sharableThing.getCalendarBook().blockWeekends = formData.blockweekends;
+    // this.sharableThing.getCalendarBook().blockWorkweek = formData.blockworkweek;
+    this.updateCalendarBook(formData);
     this.sharableThingService.saveSharableThing(this.sharableThing)
           .then(() => {
             this.sharableThingService.sendMailToNotNotifiedFriends(this.currentUser, this.sharableThing);
             // the user is saved here to save the friends we may have added
             this.userService.saveUser(this.currentUser)
-                            .then(() => this.router.navigate(['sharableThingsList'], {skipLocationChange: true}))
-                             .catch(err => console.log(err));
+                            .then(() => this.router.navigate(['sharableThingsList']))
+                            // .then(() => this.router.navigate(['sharableThingsList'], {skipLocationChange: true}))
+                            .catch(err => console.log(err));
           })
           .catch(err => console.log(err));
   }
 
+  updateCalendarBook(formData) {
+    for (const day of this.getBlockableDays()) {
+      this.sharableThing.getCalendarBook()[day.blockProperty] = formData[day.name];
+    }
+  }
+
   addFriend() {
-    const dialogRef = this.dialog.open(AddFriendEmailComponent);
+    const dialogRef = this.dialog.open(AddFriendEmailDialogComponent);
     dialogRef.afterClosed().subscribe((friend: Friend) => {
-      console.log('firend', friend);
       if (friend && friend.email) {
         this.sharableThing.addFriendEmail(friend.email, false);
         this.currentUser.addFriend(friend);
@@ -180,5 +204,31 @@ export class SharableThingComponent implements OnInit, OnDestroy {
     return this.session.breakpoint === 'xs' ? 2 : 1;
   }
 
+  getBlockableDaysLabels() {
+    return this.getBlockableDays().map(day => day.name);
+  }
+  getBlockableDays() {
+    return [
+      {name: 'Sun', blockProperty: 'blockSunday', longName: 'Sunday'},
+      {name: 'Mon', blockProperty: 'blockMonday', longName: 'Monday'},
+      {name: 'Tue', blockProperty: 'blockTuesday', longName: 'Tuesday'},
+      {name: 'Wed', blockProperty: 'blockWednesday', longName: 'Wednesday'},
+      {name: 'Thu', blockProperty: 'blockThursday', longName: 'Thursday'},
+      {name: 'Fri', blockProperty: 'blockFriday', longName: 'Friday'},
+      {name: 'Sat', blockProperty: 'blockSaturday', longName: 'Saturday'},
+    ];
+  }
+  getDayName(day) {
+    return day;
+  }
+  getDayCheckboxTooltip(dayShortName) {
+    const longDayName = this.getBlockableDays().filter(day => day.name === dayShortName)[0].longName;
+    return 'Check if you want to block all ' + longDayName + 's';
+  }
+  toggleBlock(dayShortName, event) {
+    const dayBlockProperty = this.getBlockableDays().filter(day => day.name === dayShortName)[0].blockProperty;
+    this.sharableThing.getCalendarBook()[dayBlockProperty] = event.checked;
+    this.calendarComponent.refreshView();
+  }
 }
 

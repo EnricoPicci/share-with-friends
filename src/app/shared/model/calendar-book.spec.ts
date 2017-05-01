@@ -237,13 +237,13 @@ describe('CalendarBook', () => {
     const date = new Date(2017, 3, 14); // it is a Friday
     expect(calendarBook.isDateFree(date)).toBeFalsy();
   });
-  it('block workweek and test that a Sunday is free', () => {
+  it('block workweek and test that a Saturday is free', () => {
     const calendarBook = new CalendarBook();
     calendarBook.blockWorkweek = true;
     const date = new Date(2017, 3, 15); // it is a Saturday
     expect(calendarBook.isDateFree(date)).toBeTruthy();
   });
-  it('block workweek and test that a Saturday is NOT free', () => {
+  it('block workweek and test that a Sunday is NOT free', () => {
     const calendarBook = new CalendarBook();
     calendarBook.blockWorkweek = true;
     const date = new Date(2017, 3, 16); // it is a Sunday
@@ -287,6 +287,204 @@ describe('CalendarBook', () => {
     const from = new Date(2016, 3, 14);
     const to = new Date(2016, 3, 16);
     expect(() => calendarBook.removeDateIntervalBlock({from, to})).toThrow();
+  });
+
+  // test blocks on specific days of the week
+  it('block Mondays and test that a Monday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockMonday = true;
+    const date = new Date(2017, 4, 8); // it is a Monday
+    expect(calendarBook.isDateFree(date)).toBeFalsy();
+  });
+  it('block Mondays and test that a Sunday and a Tuesday are free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockMonday = true;
+    let date = new Date(2017, 4, 7); // it is a Sunday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+    date = new Date(2017, 4, 9); // it is a Tuesday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+  });
+  it('block Mondays and test that an interval containing a Monday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockMonday = true;
+    const date1 = new Date(2017, 4, 9); // it is a Tuesday
+    const date2 = new Date(2017, 4, 16); // it is a Tuesday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeFalsy();
+  });
+  it('block Mondays and test that an interval not containing a Monday is free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockMonday = true;
+    const date1 = new Date(2017, 4, 9); // it is a Tuesday
+    const date2 = new Date(2017, 4, 14); // it is a Sunday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeTruthy();
+  });
+  it('block Tuesdays and test that a Tuesday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockTuesday = true;
+    const date = new Date(2017, 4, 9); // it is a Tuesday
+    expect(calendarBook.isDateFree(date)).toBeFalsy();
+  });
+  it('block Tuesdays and test that a Monday and a Wednesday are free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockTuesday = true;
+    let date = new Date(2017, 4, 8); // it is a Monday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+    date = new Date(2017, 4, 10); // it is a Wednesday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+  });
+  it('block Tuesdays and test that an interval containing a Tuesday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockTuesday = true;
+    const date1 = new Date(2017, 4, 9); // it is a Tuesday
+    const date2 = new Date(2017, 4, 16); // it is a Tuesday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeFalsy();
+  });
+  it('block Tuesdays and test that an interval not containing a Tuesday is free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockTuesday = true;
+    const date1 = new Date(2017, 4, 10); // it is a Wednesday
+    const date2 = new Date(2017, 4, 15); // it is a Monday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeTruthy();
+  });
+  it('block Wednesdays and test that a Wednesday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockWednesday = true;
+    const date = new Date(2017, 4, 10); // it is a Wednesday
+    expect(calendarBook.isDateFree(date)).toBeFalsy();
+  });
+  it('block Wednesdays and test that a Tuesday and a Thursday are free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockWednesday = true;
+    let date = new Date(2017, 4, 9); // it is a Tuesday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+    date = new Date(2017, 4, 11); // it is a Thursday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+  });
+  it('block Wednesdays and test that an interval containing a Wednesday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockWednesday = true;
+    const date1 = new Date(2017, 4, 9); // it is a Tuesday
+    const date2 = new Date(2017, 4, 16); // it is a Tuesday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeFalsy();
+  });
+  it('block Wednesdays and test that an interval not containing a Wednesday is free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockWednesday = true;
+    const date1 = new Date(2017, 4, 11); // it is a Thursday
+    const date2 = new Date(2017, 4, 16); // it is a Tuesday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeTruthy();
+  });
+  it('block Thursdays and test that a Thursday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockThursday = true;
+    const date = new Date(2017, 4, 11); // it is a Thursday
+    expect(calendarBook.isDateFree(date)).toBeFalsy();
+  });
+  it('block Thursdays and test that a Wednesday and a Friday are free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockThursday = true;
+    let date = new Date(2017, 4, 10); // it is a Wednesday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+    date = new Date(2017, 4, 12); // it is a Friday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+  });
+  it('block Thursdays and test that an interval containing a Thursday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockThursday = true;
+    const date1 = new Date(2017, 4, 9); // it is a Tuesday
+    const date2 = new Date(2017, 4, 16); // it is a Tuesday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeFalsy();
+  });
+  it('block Thursdays and test that an interval not containing a Thursday is free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockThursday = true;
+    const date1 = new Date(2017, 4, 12); // it is a Friday
+    const date2 = new Date(2017, 4, 17); // it is a Wednesday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeTruthy();
+  });
+  it('block Fridays and test that a Friday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockFriday = true;
+    const date = new Date(2017, 4, 12); // it is a Friday
+    expect(calendarBook.isDateFree(date)).toBeFalsy();
+  });
+  it('block Fridays and test that a Thursday and a Saturday are free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockFriday = true;
+    let date = new Date(2017, 4, 11); // it is a Thursday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+    date = new Date(2017, 4, 13); // it is a Saturday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+  });
+  it('block Fridays and test that an interval containing a Friday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockFriday = true;
+    const date1 = new Date(2017, 4, 9); // it is a Tuesday
+    const date2 = new Date(2017, 4, 16); // it is a Tuesday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeFalsy();
+  });
+  it('block Fridays and test that an interval not containing a Friday is free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockFriday = true;
+    const date1 = new Date(2017, 4, 13); // it is a Saturday
+    const date2 = new Date(2017, 4, 18); // it is a Thursday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeTruthy();
+  });
+  it('block Saturdays and test that a Saturday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockSaturday = true;
+    const date = new Date(2017, 4, 13); // it is a Saturday
+    expect(calendarBook.isDateFree(date)).toBeFalsy();
+  });
+  it('block Saturdays and test that a Friday and a Sunday are free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockSaturday = true;
+    let date = new Date(2017, 4, 12); // it is a Friday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+    date = new Date(2017, 4, 14); // it is a Sunday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+  });
+  it('block Saturdays and test that an interval containing a Saturday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockSaturday = true;
+    const date1 = new Date(2017, 4, 9); // it is a Tuesday
+    const date2 = new Date(2017, 4, 16); // it is a Tuesday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeFalsy();
+  });
+  it('block Saturdays and test that an interval not containing a Saturday is free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockSaturday = true;
+    const date1 = new Date(2017, 4, 14); // it is a Sunday
+    const date2 = new Date(2017, 4, 19); // it is a Friday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeTruthy();
+  });
+  it('block Sundays and test that a Sunday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockSunday = true;
+    const date = new Date(2017, 4, 14); // it is a Sunday
+    expect(calendarBook.isDateFree(date)).toBeFalsy();
+  });
+  it('block Sundays and test that a Saturday and a Monday are free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockSunday = true;
+    let date = new Date(2017, 4, 13); // it is a Saturday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+    date = new Date(2017, 4, 15); // it is a Monday
+    expect(calendarBook.isDateFree(date)).toBeTruthy();
+  });
+  it('block Sundays and test that an interval containing a Sunday is NOT free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockSunday = true;
+    const date1 = new Date(2017, 4, 9); // it is a Tuesday
+    const date2 = new Date(2017, 4, 16); // it is a Tuesday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeFalsy();
+  });
+  it('block Sundays and test that an interval not containing a Sunday is free', () => {
+    const calendarBook = new CalendarBook();
+    calendarBook.blockSunday = true;
+    const date1 = new Date(2017, 4, 15); // it is a Monday
+    const date2 = new Date(2017, 4, 20); // it is a Saturday
+    expect(calendarBook.isDateIntervalFree(date1, date2)).toBeTruthy();
   });
 
 

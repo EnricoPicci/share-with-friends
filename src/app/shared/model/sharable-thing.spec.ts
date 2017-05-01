@@ -19,7 +19,7 @@ describe('SharableThing', () => {
   const monetaryAmount1 = new MonetaryAmount(monetaryAmountAmount);
   it('test creation of a SharableThing with charge in EUR', () => {
     const sharableThing1 = new SharableThing(key, 'a thing', 'a thing to share', [],
-                                              ownerEmail, friendEmails, false, 80);
+                                              ownerEmail, friendEmails, false, {amount: 80});
     // expect(sharableThing1.$key).toBe(key);
     expect(sharableThing1.$key).toBe(key);
     expect(sharableThing1.name).toBe(name);
@@ -34,7 +34,7 @@ describe('SharableThing', () => {
   const monetaryAmount2 = new MonetaryAmount(monetaryAmountAmount, monetaryAmountCurrency);
   it('test creation of a SharableThing with charge in USD', () => {
     const sharableThing2 = new SharableThing(key, 'a thing', 'a thing to share', [],
-                                            ownerEmail, friendEmails, false, 80, monetaryAmountCurrency);
+                                            ownerEmail, friendEmails, false, {amount: 80, currency: monetaryAmountCurrency});
     // expect(sharableThing2.$key).toBe(key);
     expect(sharableThing2.name).toBe(name);
     expect(sharableThing2.description).toBe(description);

@@ -1,4 +1,4 @@
-  <md-card class="section-header">{{viewController.getHeaderText(sharableThings)}}</md-card>
+  <md-card class="section-header">{{sharableThings? viewController.getHeaderText(sharableThings) : ''}}</md-card>
 
   <md-grid-list [cols]="session.getDefaultNumberOfColumns()" class="space-from-top">
 

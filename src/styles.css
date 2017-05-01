@@ -31,3 +31,35 @@ swiper .swiper-container {
     /*padding: 30px;*/
     position: inherit;
 }
+
+sharable-thing-showcase-calendar .cal-month-view .cal-day-cell {
+    min-height: 60px;
+}
+sharable-thing-showcase-calendar .cal-month-view .cal-cell-top {
+    min-height: 40px;
+}
+sharable-thing-showcase-calendar .cal-month-view .cal-day-number {
+    margin-top: 10px;
+    margin-bottom: 8px;
+}
+
+.cal-month-view .cal-cell.cal-has-events {
+  background-color: lightblue; 
+}
+/* to manage background color in case of days of an event to be booked */
+.cal-day-to-be-booked-cell {
+  background-color: pink;
+}
+.cal-day-to-be-modified-cell {
+  background-color: green;
+}
+.cal-past {
+  background-color: grey;
+}
+.cal-day-blocked {
+  background-color: lightgrey;
+}
+
+.calendar {
+    width: 95%;
+}

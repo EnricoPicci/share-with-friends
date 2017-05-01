@@ -2,3 +2,10 @@
   width: 200px;
 }
 
+.flexitem {
+  text-align: center;
+  /*line-height: 100px;
+  margin: 2px;
+  box-shadow: none !important;
+  padding: 0 !important;*/
+}

@@ -8,7 +8,7 @@ import {User} from '../shared/model/user';
 
 @Component({
   template: `
-                    <h3>add a friend</h3>
+                    <h3 md-dialog-title>add a friend</h3>
                     <section style="display: flex; align-content: center; align-items: center; height: 80px;">
                         <!--  Use hidden rather than *ngIf since I need to use the template variable #emailInput outside
                                 the structural directive *ngIf -->
@@ -50,7 +50,7 @@ import {User} from '../shared/model/user';
                 `,
   styleUrls: ['./add-friend-email-dialog.component.css']
 })
-export class AddFriendEmailComponent implements OnInit, OnDestroy {
+export class AddFriendEmailDialogComponent implements OnInit, OnDestroy {
     errorMessageEmail: string;
     errorMessageNickname: string;
 
@@ -59,7 +59,7 @@ export class AddFriendEmailComponent implements OnInit, OnDestroy {
     currentUser: User;
     currentUserSubscription: Subscription;
 
-    constructor(public dialogRef: MdDialogRef<AddFriendEmailComponent>,
+    constructor(public dialogRef: MdDialogRef<AddFriendEmailDialogComponent>,
               private userService: UserService) {}
 
     ngOnInit() {

@@ -18,9 +18,11 @@
         <div class="swiper-button-prev"></div>
     </swiper>
   </md-grid-tile-->
-  <md-grid-tile colspan="4" rowspan="8">
+  <md-grid-tile colspan="4" rowspan="9">
     <sharable-thing-showcase-view [imageUrls]="imageUrls" *ngIf="!showCalendar"></sharable-thing-showcase-view>
-    <sharable-thing-showcase-calendar *ngIf="showCalendar"></sharable-thing-showcase-calendar>
+    <sharable-thing-showcase-calendar *ngIf="showCalendar" class="calendar"
+      [sharableThing]="sharableThing" [user]="currentUser">
+    </sharable-thing-showcase-calendar>
   </md-grid-tile>
 
   <md-grid-tile colspan="4" rowspan="1">

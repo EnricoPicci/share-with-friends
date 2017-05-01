@@ -1,0 +1,39 @@
+/*sharable-thing-showcase-calendar .cal-month-view .cal-day-cell {
+    min-height: 60px;
+}*/
+
+/*.cal-day-to-be-booked-cell {
+    background-color: pink;
+}*/
+
+/*.cal-button-div {
+    display: table;
+    height: 100px;
+    width: 100%;
+    text-align: center;
+}
+
+.cal-button-span {
+    display: table-cell;
+    vertical-align: middle;
+}*/
+
+.cal-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: medium;
+    outline: none;
+}
+
+.spinner {
+    position: absolute;
+    margin-top: 10%;
+    margin-left: 40%;
+}
+
+.month {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}

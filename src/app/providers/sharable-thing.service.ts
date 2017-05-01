@@ -58,15 +58,29 @@ export class SharableThingService {
   }
   loadSharableThing(key: string) {
     return this.af.database.object(this.getFirebaseObjRef(key))
-            .map(SharableThing.fromJson)
-            .switchMap(sharableThing => this.bookingService.loadBookingsForSharableThingKey(sharableThing.$key)
+            .switchMap(sharableThingObj => this.bookingService.loadBookingsForSharableThingKey(sharableThingObj.$key)
                                                         .map(bookings => {
-                                                            return {sharableThing, bookings};
+                                                            return {sharableThingObj, bookings};
                                                           }))
+          // we need  to create a new instance of SharableThing after having read the bookings to make sure that if bookings change
+          // (e.g. one booking is added or removed) we have a new instance of SharableThing - in this way the change detection
+          // can actually work
+            .map(({sharableThingObj, bookings}) => {
+              return {sharableThing: SharableThing.fromJson(sharableThingObj), bookings};
+            })
             .map(({sharableThing, bookings}) => {
               sharableThing.getCalendarBook().bookings = bookings;
               return sharableThing;
             });
+            // .map(SharableThing.fromJson)
+            // .switchMap(sharableThing => this.bookingService.loadBookingsForSharableThingKey(sharableThing.$key)
+            //                                             .map(bookings => {
+            //                                                 return {sharableThing, bookings};
+            //                                               }))
+            // .map(({sharableThing, bookings}) => {
+            //   sharableThing.getCalendarBook().bookings = bookings;
+            //   return sharableThing;
+            // });
   }
   loadSharableThingAndOwner(key: string) {
     return this.loadSharableThing(key)
@@ -135,7 +149,6 @@ export class SharableThingService {
     listObservable.push({temporary: true})
       .then((item) => {
         sharableThing.$key = item.key;
-        console.log('getUniqueKeyForSharableThing', sharableThing);
       })
       .catch(err => console.error('error in getUniqueKeyForSharableThing', err));
   }
@@ -194,7 +207,6 @@ export class SharableThingService {
       promises.push(this.retrieveImageUrls(sharableThing));
     }
     Promise.all(promises).then(res => {
-                console.log('Promise any', res);
                 subject.next(sharableThings);
                 subject.complete();
             },
@@ -273,7 +285,6 @@ export class SharableThingService {
 
   private getFirebaseRef() {
     const refff = '/' + environment.db + SHARABLETHINGS;
-    console.log('refff', refff);
     return '/' + environment.db + SHARABLETHINGS;
   }
   private getFirebaseObjRef(key: string) {
