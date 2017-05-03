@@ -66,7 +66,7 @@ describe('BookingService', () => {
       console.log('START ADD BOOKING TEST');
       console.log('(ADD BOOKING)  Create a sharable thing to be booked later ...');
       const sharableThing1 = new SharableThing(null, name, description, [],
-                                    'fakeowner1@my.com', [friendEmailObj, bookerEmailObj], false, monetaryAmountAmount);
+                                    'fakeowner1@my.com', [friendEmailObj, bookerEmailObj], false, {amount: monetaryAmountAmount});
       sharableThingService.saveSharableThing(sharableThing1).then(() => {
         console.log('(ADD BOOKING)  ... then I logout ...');
         authService.logout().then(() => {

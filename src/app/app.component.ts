@@ -46,5 +46,9 @@ export class AppComponent implements OnInit {
     this.router.navigate(['shared-with-me']);
     sidenav.toggle();
   }
+  goToMyBookings(sidenav) {
+    this.router.navigate(['my-bookings']);
+    sidenav.toggle();
+  }
 
 }

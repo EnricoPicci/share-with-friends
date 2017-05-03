@@ -69,7 +69,7 @@ describe('SharableThingService', () => {
       const sharableThing1 = new SharableThing(null, name, description, [],
                                     theSharableThingOwner.email, [{email: theUser.email, notified: false},
                                                             {email: theSecondFriendEmail, notified: false}],
-                                    false, monetaryAmountAmount);
+                                    false, {amount: monetaryAmountAmount});
       sharableThingService.saveSharableThing(sharableThing1).then(() => {
         if (!sharableThing1.$key) {
             console.log('we expect to have a key in the SharableThing', sharableThing1);
@@ -206,7 +206,7 @@ describe('SharableThingService', () => {
       console.log(testName + ' ... after some time a sharable thing for a friend who will later book it is added');
       const sharableThing1 = new SharableThing(null, name, description, [],
                                     theSharableThingOwnerEmail, [{email: theFriendWhoWillBookEmail, notified: false}],
-                                    false, monetaryAmountAmount);
+                                    false, {amount: monetaryAmountAmount});
       sharableThingService.saveSharableThing(sharableThing1).then(() => { // 01
         if (!sharableThing1.$key) {
             console.log(testName + ' ... we expect to have a key in the SharableThing', sharableThing1);

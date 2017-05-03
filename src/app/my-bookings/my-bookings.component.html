@@ -1,0 +1,24 @@
+<md-card class="section-header">My bookings</md-card>
+
+<md-list *ngIf="bookingSharablethingOwnerStructures">
+  <md-list-item class="list booking-header">
+    <div fxLayout="row" class="list">
+      <div fxFlex="30%">PERIOD</div>
+      <div fxFlex="20%">ITEM</div>
+      <div fxFlex="20%">OWNER</div>
+      <div fxFlex="20%">STATUS</div>
+    </div>
+  </md-list-item>
+  <md-list-item *ngFor="let booking of getBookingInfo()" class="list booking-item">
+    <div fxLayout="row" class="list">
+      <div fxFlex="30%">{{booking.period}}</div>
+      <div fxFlex="20%">{{booking.thing}}</div>
+      <div fxFlex="20%">{{booking.owner}}</div>
+      <div fxFlex="20%">{{booking.status}}</div>
+    </div>
+     <!--<button md-icon-button>
+        <md-icon>info</md-icon>
+     </button>-->
+  </md-list-item>
+</md-list>
+

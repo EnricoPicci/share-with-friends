@@ -34,6 +34,7 @@ export class SharableThingShowcaseViewComponent {
         autoplayDisableOnInteraction: false
     };
 
-  constructor(public session: SessionService
-              ) { }
+    constructor(
+      public session: SessionService
+    ) { }
 }

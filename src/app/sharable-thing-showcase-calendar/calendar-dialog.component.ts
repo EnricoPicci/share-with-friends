@@ -12,7 +12,9 @@ import {MdDialogRef, MD_DIALOG_DATA} from '@angular/material';
   styleUrls: ['./calendar-dialog.component.css']
 })
 export class CalendarDialogComponent {
-    constructor(public dialogRef: MdDialogRef<CalendarDialogComponent>,
-    @Inject(MD_DIALOG_DATA) public data: any) {}
+    constructor(
+        public dialogRef: MdDialogRef<CalendarDialogComponent>,
+        @Inject(MD_DIALOG_DATA) public data: any
+    ) {}
 
 }

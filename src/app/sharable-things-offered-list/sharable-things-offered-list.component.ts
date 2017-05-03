@@ -18,10 +18,11 @@ export class SharableThingsOfferedListComponent implements OnInit, OnDestroy {
 
   sub1: Subscription;
 
-  constructor(private router: Router,
-              private viewController: SharableThingsOfferedListViewcontrollerService,
-              private session: SessionService,
-              ) { }
+  constructor(
+    private router: Router,
+    private viewController: SharableThingsOfferedListViewcontrollerService,
+    private session: SessionService,
+  ) { }
 
   ngOnInit() {
     this.sub1 = this.viewController

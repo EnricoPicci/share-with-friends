@@ -2,6 +2,7 @@
   <md-sidenav #sidenav mode="side" opened="false" (mouseleave)="sidenav.opened = false" style="width: 150px">
     <button md-raised-button class="full-width" (click)="goToSharableThingsList(sidenav)">Share</button>
     <button md-raised-button class="full-width" (click)="goToSharableThingsOfferedList(sidenav)">Book</button>
+    <button md-raised-button class="full-width" (click)="goToMyBookings(sidenav)">My Bookings</button>
   </md-sidenav>
   <md-toolbar color="primary">
     <md-icon *ngIf="currentUser" class="toolbar-clickable-icon" (click)="sidenav.toggle()">menu</md-icon>

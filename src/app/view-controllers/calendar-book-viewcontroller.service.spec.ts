@@ -113,10 +113,10 @@ describe('CalendarBookViewcontrollerService', () => {
                                       {email: theFriendEmail2, notified: false},
                                       {email: theFriendEmail3, notified: false},
                                     ],
-                                    false, monetaryAmountAmount);
+                                    false, {amount: monetaryAmountAmount});
       sharableThingService.saveSharableThing(sharableThing).then(() => { // 01
       theSharableThingKey1 = sharableThing.$key;
-      console.log(testName + ' THE SHARABLE KEY 2222222', theSharableThingKey2);
+      console.log(testName + ' THE SHARABLE KEY 11111111', theSharableThingKey1);
         // 2.1) CREATE A NEW SHARABLE-THING WHICH HAS NO BOOKINGS
       // create a sharable thing for 3 friends who will later book it
       console.log(testName + ' ... after some time a sharable thing 222222 for no friends');
@@ -127,7 +127,7 @@ describe('CalendarBookViewcontrollerService', () => {
                                       {email: theFriendEmail2, notified: false},
                                       {email: theFriendEmail3, notified: false},
                                     ],
-                                    false, monetaryAmountAmount);
+                                    false, {amount: monetaryAmountAmount});
         sharableThingService.saveSharableThing(sharableThingWithNoBookings).then(() => { // 01.1
           theSharableThingKey2 = sharableThingWithNoBookings.$key;
           console.log(testName + ' THE SHARABLE KEY 2222222', theSharableThingKey2);

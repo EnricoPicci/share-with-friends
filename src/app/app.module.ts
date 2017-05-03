@@ -40,6 +40,8 @@ import { SharableThingShowcaseViewComponent } from './sharable-thing-showcase-vi
 import { SharableThingShowcaseCalendarComponent } from './sharable-thing-showcase-calendar/sharable-thing-showcase-calendar.component';
 import { CalendarBookViewcontrollerService } from './view-controllers/calendar-book-viewcontroller.service';
 import {CalendarDialogComponent} from './sharable-thing-showcase-calendar/calendar-dialog.component';
+import { MyBookingsComponent } from './my-bookings/my-bookings.component';
+import {MyBookingsViewcontrollerService} from './view-controllers/my-bookings-viewcontroller.service';
 
 const appRoutes: Routes = [
   { path: 'auth', component: HomeComponent,
@@ -77,10 +79,10 @@ const appRoutes: Routes = [
             path: 'shared-with-me',
             component: SharableThingsOfferedListComponent
           },
-          // {
-          //   path: 'calendar',
-          //   component: CalendarBookComponent
-          // },
+          {
+            path: 'my-bookings',
+            component: MyBookingsComponent
+          },
           {
             path: '',
             redirectTo: '/auth',
@@ -107,7 +109,8 @@ const appRoutes: Routes = [
     // CalendarBookComponent,
     SharableThingShowcaseViewComponent,
     SharableThingShowcaseCalendarComponent,
-    CalendarDialogComponent
+    CalendarDialogComponent,
+    MyBookingsComponent
   ],
   imports: [
     BrowserModule,
@@ -129,7 +132,8 @@ const appRoutes: Routes = [
     SessionService,
     BookingService,
     SharableThingsOfferedListViewcontrollerService,
-    CalendarBookViewcontrollerService
+    CalendarBookViewcontrollerService,
+    MyBookingsViewcontrollerService
     ],
   bootstrap: [AppComponent],
   entryComponents: [

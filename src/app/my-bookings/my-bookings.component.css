@@ -1,0 +1,16 @@
+.list {
+    width: 100%;
+}
+
+.booking-header {
+    font-weight: bold;
+    background-color: azure;
+}
+
+.booking-item {
+    padding: 3px;
+}
+
+.booking-item:nth-child(odd) {
+    background-color: whitesmoke;
+}
